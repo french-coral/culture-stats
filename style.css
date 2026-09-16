@@ -1,0 +1,67 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: transparent;
+    color: #37352f;
+}
+
+.dashboard {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin: 0 0 4px;
+    font-size: 24px;
+}
+
+#updated {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.55;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.stat-card {
+    padding: 18px;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 12px;
+    background: rgba(127, 127, 127, 0.06);
+}
+
+.stat-name {
+    font-size: 14px;
+    opacity: 0.65;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #ffffff;
+    }
+}
