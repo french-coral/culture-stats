@@ -1,3 +1,35 @@
+const themeQuery = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+);
+
+function applyTheme() {
+    const savedTheme = localStorage.getItem("theme");
+
+    document.documentElement.classList.remove(
+        "light",
+        "dark"
+    );
+
+    if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+    } else if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+    } else {
+        document.documentElement.classList.add(
+            themeQuery.matches ? "dark" : "light"
+        );
+    }
+}
+
+themeQuery.addEventListener("change", () => {
+    if (!localStorage.getItem("theme")) {
+        applyTheme();
+    }
+});
+
+applyTheme();
+
+
 async function loadStats() {
     const response = await fetch("./stats.json");
 
@@ -7,8 +39,11 @@ async function loadStats() {
 
     const data = await response.json();
 
-    const statsContainer = document.getElementById("stats");
-    const updatedElement = document.getElementById("updated");
+    const statsContainer =
+        document.getElementById("stats");
+
+    const updatedElement =
+        document.getElementById("updated");
 
     const updated = new Date(data.updated_at);
 
@@ -21,13 +56,19 @@ async function loadStats() {
         card.className = "stat-card";
 
         card.innerHTML = `
-            <div class="stat-name">${database.name}</div>
-            <div class="stat-value">${database.total}</div>
+            <div class="stat-name">
+                ${database.name}
+            </div>
+
+            <div class="stat-value">
+                ${database.total}
+            </div>
         `;
 
         statsContainer.appendChild(card);
     }
 }
+
 
 loadStats().catch(error => {
     console.error(error);

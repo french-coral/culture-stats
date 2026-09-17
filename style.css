@@ -6,13 +6,42 @@ html,
 body {
     margin: 0;
     padding: 0;
-    background: transparent !important;
+    min-height: 100%;
+}
+
+:root {
+    color-scheme: light dark;
+
+    --text: #37352f;
+    --text-muted: rgba(55, 53, 47, 0.55);
+    --border: rgba(55, 53, 47, 0.12);
+    --card-bg: rgba(55, 53, 47, 0.04);
+    --button-bg: rgba(55, 53, 47, 0.06);
+}
+
+html.dark {
+    --text: #e8e8e8;
+    --text-muted: rgba(232, 232, 232, 0.55);
+    --border: rgba(255, 255, 255, 0.14);
+    --card-bg: rgba(255, 255, 255, 0.06);
+    --button-bg: rgba(255, 255, 255, 0.08);
+}
+
+html.light {
+    --text: #37352f;
+    --text-muted: rgba(55, 53, 47, 0.55);
+    --border: rgba(55, 53, 47, 0.12);
+    --card-bg: rgba(55, 53, 47, 0.04);
+    --button-bg: rgba(55, 53, 47, 0.06);
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background: transparent;
-    color: #37352f;
+    color: var(--text);
+    transition:
+        color 0.2s ease,
+        background 0.2s ease;
 }
 
 .dashboard {
@@ -29,40 +58,69 @@ header {
 h1 {
     margin: 0 0 4px;
     font-size: 24px;
+    line-height: 1.2;
 }
 
 #updated {
     margin: 0;
     font-size: 13px;
-    opacity: 0.55;
+    color: var(--text-muted);
 }
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(160px, 1fr)
+    );
     gap: 12px;
 }
 
 .stat-card {
     padding: 18px;
-    border: 1px solid rgba(127, 127, 127, 0.2);
+    border: 1px solid var(--border);
     border-radius: 12px;
-    background: rgba(127, 127, 127, 0.06);
+    background: var(--card-bg);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-1px);
 }
 
 .stat-name {
     font-size: 14px;
-    opacity: 0.65;
+    color: var(--text-muted);
     margin-bottom: 8px;
 }
 
 .stat-value {
     font-size: 32px;
     font-weight: 600;
+    line-height: 1;
 }
 
-@media (prefers-color-scheme: dark) {
-    body {
-        color: #ffffff;
+/* Small screens */
+
+@media (max-width: 500px) {
+    .dashboard {
+        padding: 12px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 14px;
+    }
+
+    .stat-value {
+        font-size: 26px;
     }
 }
