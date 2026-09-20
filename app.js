@@ -322,24 +322,53 @@ function renderDatabaseBreakdown() {
 
 function renderYearSummary() {
 
-  const data =
-    getCurrentData();
+  const data = getCurrentData();
 
   yearSummary.innerHTML = "";
 
-  const years =
-    getYears(data)
-      .reverse();
+  const years = getYears(data);
 
   if (!years.length) {
-
-    yearSummary.textContent =
-      "No data available.";
-
+    yearSummary.textContent = "No data available.";
     return;
   }
 
-  years.forEach(year => {
+  // Use the latest/current year available.
+  const year = years[years.length - 1];
+
+  const statsForYear =
+    data.year_stats?.[year];
+
+  if (!statsForYear) {
+    yearSummary.textContent = "No data available.";
+    return;
+  }
+
+  const entries =
+    statsForYear.total || 0;
+
+  const average =
+    statsForYear.average_per_active_month ?? 0;
+
+  const activeMonths =
+    statsForYear.active_months || 0;
+
+  const items = [
+    {
+      value: formatNumber(entries),
+      label: `Entries in ${year}`
+    },
+    {
+      value: Number(average).toFixed(1),
+      label: "Average entries / active month"
+    },
+    {
+      value: activeMonths,
+      label: "Active months"
+    }
+  ];
+
+  items.forEach(item => {
 
     const row =
       document.createElement("div");
@@ -347,26 +376,26 @@ function renderYearSummary() {
     row.className =
       "year-summary-row";
 
-    const yearElement =
-      document.createElement("span");
-
-    yearElement.className =
-      "year-summary-year";
-
-    yearElement.textContent =
-      year;
-
     const value =
-      document.createElement("span");
+      document.createElement("strong");
 
     value.className =
       "year-summary-value";
 
     value.textContent =
-      `${formatNumber(data.years[year])} entries`;
+      item.value;
 
-    row.appendChild(yearElement);
+    const label =
+      document.createElement("span");
+
+    label.className =
+      "year-summary-label";
+
+    label.textContent =
+      item.label;
+
     row.appendChild(value);
+    row.appendChild(label);
 
     yearSummary.appendChild(row);
   });
@@ -601,14 +630,17 @@ function renderHeatmap() {
               )
             );
 
-          const light =
+        const dark =
             document.documentElement.dataset.theme ===
             "dark";
 
-          cell.style.background =
-            light
-              ? `rgba(180, 210, 190, ${0.25 + intensity * 0.7})`
-              : `rgba(80, 150, 100, ${0.15 + intensity * 0.7})`;
+        const alpha =
+            0.20 + intensity * 0.75;
+
+        cell.style.background =
+            dark
+            ? `rgba(170, 120, 220, ${alpha})`
+            : `rgba(125, 70, 170, ${alpha})`;
 
         }
 

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20T21:35:16.398968Z",
+  "updated_at": "2026-09-20T22:40:10.678899Z",
   "databases": {
     "all": {
       "name": "All",
@@ -77,7 +77,9 @@
       },
       "release_age": {
         "average": 17.5,
-        "entries_with_data": 12
+        "average_release_year": 2006.2,
+        "entries_with_data": 12,
+        "release_year_entries_with_data": 12
       },
       "breakdown": {
         "video_games": 7,
@@ -153,7 +155,9 @@
       },
       "release_age": {
         "average": 7.57,
-        "entries_with_data": 7
+        "average_release_year": 2016.9,
+        "entries_with_data": 7,
+        "release_year_entries_with_data": 7
       }
     },
     "games": {
@@ -191,7 +195,9 @@
       },
       "release_age": {
         "average": 38.0,
-        "entries_with_data": 1
+        "average_release_year": 1971.0,
+        "entries_with_data": 1,
+        "release_year_entries_with_data": 1
       }
     },
     "reads": {
@@ -231,7 +237,9 @@
       },
       "release_age": {
         "average": 84.0,
-        "entries_with_data": 1
+        "average_release_year": 1942.0,
+        "entries_with_data": 1,
+        "release_year_entries_with_data": 1
       }
     },
     "multimedia": {
@@ -273,7 +281,9 @@
       },
       "release_age": {
         "average": 11.67,
-        "entries_with_data": 3
+        "average_release_year": 2014.3,
+        "entries_with_data": 3,
+        "release_year_entries_with_data": 3
       }
     },
     "music": {
@@ -302,7 +312,9 @@
       },
       "release_age": {
         "average": null,
-        "entries_with_data": 0
+        "average_release_year": null,
+        "entries_with_data": 0,
+        "release_year_entries_with_data": 0
       }
     }
   }
