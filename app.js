@@ -619,29 +619,57 @@ function renderHeatmap() {
 
         if (count > 0) {
 
-          const intensity =
-            Math.min(
-              1,
-              count / Math.max(
+            const maxValue =
+                Math.max(
                 1,
-                getMaxHeatmapValue(
-                  heatmapData
-                )
-              )
-            );
+                getMaxHeatmapValue(heatmapData)
+                );
 
-        const dark =
-            document.documentElement.dataset.theme ===
-            "dark";
+            const intensity =
+                Math.min(
+                1,
+                count / maxValue
+                );
 
-        const alpha =
-            0.20 + intensity * 0.75;
+            /*
+            * Purple scale.
+            *
+            * Low activity:
+            *   rgba(139, 92, 246, ...)
+            *
+            * High activity:
+            *   rgba(88, 28, 135, ...)
+            */
 
-        cell.style.background =
-            dark
-            ? `rgba(170, 120, 220, ${alpha})`
-            : `rgba(125, 70, 170, ${alpha})`;
+            const lightPurple = [139, 92, 246];
+            const darkPurple = [88, 28, 135];
 
+            const r =
+                Math.round(
+                lightPurple[0]
+                + (darkPurple[0] - lightPurple[0])
+                * intensity
+                );
+
+            const g =
+                Math.round(
+                lightPurple[1]
+                + (darkPurple[1] - lightPurple[1])
+                * intensity
+                );
+
+            const b =
+                Math.round(
+                lightPurple[2]
+                + (darkPurple[2] - lightPurple[2])
+                * intensity
+                );
+
+            const alpha =
+                0.25 + intensity * 0.75;
+
+            cell.style.background =
+                `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
         cell.addEventListener(
@@ -691,198 +719,167 @@ function getMaxHeatmapValue(data) {
    Year curve
 -------------------------------------------------- */
 
-function renderYearChart() {
+function renderYearSummary() {
 
-  const data =
-    getCurrentData();
+  const data = getCurrentData();
 
-  const from =
-    Number(yearFrom.value);
+  yearSummary.innerHTML = "";
 
-  const to =
-    Number(yearTo.value);
+  const years = getYears(data);
 
-  if (
-    !from ||
-    !to ||
-    from > to
-  ) {
-    yearChart.innerHTML = "";
+  if (!years.length) {
+    yearSummary.textContent = "No data available.";
     return;
   }
 
-  const years = [];
+  // Latest year available by default.
+  const latestYear = years[years.length - 1];
 
-  for (
-    let year = from;
-    year <= to;
-    year++
-  ) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "year-summary-content";
 
-    years.push(year);
-  }
+  // ---------------------------------
+  // Header / year selector
+  // ---------------------------------
 
-  const values =
-    years.map(
-      year =>
-        data.years?.[year] || 0
-    );
+  const header = document.createElement("div");
+  header.className = "year-summary-header";
 
-  if (!values.length) {
-    yearChart.innerHTML = "";
-    return;
-  }
+  const title = document.createElement("div");
 
-  const width = 800;
-  const height = 220;
+  const heading = document.createElement("h3");
+  heading.textContent = "This year summary";
 
-  const paddingLeft = 35;
-  const paddingRight = 15;
-  const paddingTop = 15;
-  const paddingBottom = 30;
+  const subtitle = document.createElement("p");
+  subtitle.textContent = "Consumption activity";
 
-  const chartWidth =
-    width -
-    paddingLeft -
-    paddingRight;
+  title.appendChild(heading);
+  title.appendChild(subtitle);
 
-  const chartHeight =
-    height -
-    paddingTop -
-    paddingBottom;
+  const selector = document.createElement("select");
+  selector.className = "year-summary-select";
 
-  const maxValue =
-    Math.max(
-      1,
-      ...values
-    );
+  years
+    .slice()
+    .reverse()
+    .forEach(year => {
 
-  const points =
-    values.map(
-      (value, index) => {
+      const option = document.createElement("option");
 
-        const x =
-          paddingLeft +
-          (
-            index /
-            Math.max(
-              1,
-              values.length - 1
-            )
-          ) *
-          chartWidth;
+      option.value = year;
+      option.textContent = year;
 
-        const y =
-          paddingTop +
-          chartHeight -
-          (value / maxValue) *
-          chartHeight;
-
-        return { x, y, value };
+      if (year === latestYear) {
+        option.selected = true;
       }
-    );
 
-  const path =
-    points.map(
-      (point, index) =>
-        `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`
-    ).join(" ");
+      selector.appendChild(option);
+    });
 
+  header.appendChild(title);
+  header.appendChild(selector);
 
-  let svg = `
-    <svg
-      viewBox="0 0 ${width} ${height}"
-      preserveAspectRatio="none"
-    >
-      <line
-        class="chart-axis"
-        x1="${paddingLeft}"
-        y1="${paddingTop + chartHeight}"
-        x2="${width - paddingRight}"
-        y2="${paddingTop + chartHeight}"
-      />
+  wrapper.appendChild(header);
 
-      <path
-        class="chart-line"
-        d="${path}"
-      />
-  `;
+  // ---------------------------------
+  // Metrics
+  // ---------------------------------
 
-  points.forEach(
-    (point, index) => {
+  const metrics = document.createElement("div");
+  metrics.className = "year-summary-metrics";
 
-      svg += `
-        <circle
-          class="chart-dot"
-          cx="${point.x}"
-          cy="${point.y}"
-          r="4"
-          data-year="${years[index]}"
-          data-value="${point.value}"
-        />
-      `;
+  const renderMetrics = year => {
+
+    metrics.innerHTML = "";
+
+    const statsForYear =
+      data.year_stats?.[year];
+
+    if (!statsForYear) {
+
+      metrics.innerHTML =
+        `<div class="year-summary-empty">
+          No data available for ${year}.
+        </div>`;
+
+      return;
+    }
+
+    const entries =
+      statsForYear.total || 0;
+
+    const average =
+      statsForYear.average_per_active_month ?? 0;
+
+    const activeMonths =
+      statsForYear.active_months || 0;
+
+    const items = [
+
+      {
+        value: formatNumber(entries),
+        label: `Entries in ${year}`,
+      },
+
+      {
+        value: Number(average).toFixed(1),
+        label: "Average entries / month",
+      },
+
+      {
+        value: activeMonths,
+        label: "Active months",
+      },
+
+    ];
+
+    items.forEach(item => {
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "year-summary-metric";
+
+      const value =
+        document.createElement("strong");
+
+      value.className =
+        "year-summary-value";
+
+      value.textContent =
+        item.value;
+
+      const label =
+        document.createElement("span");
+
+      label.className =
+        "year-summary-label";
+
+      label.textContent =
+        item.label;
+
+      card.appendChild(value);
+      card.appendChild(label);
+
+      metrics.appendChild(card);
+    });
+  };
+
+  renderMetrics(latestYear);
+
+  selector.addEventListener(
+    "change",
+    () => {
+      renderMetrics(
+        Number(selector.value)
+      );
     }
   );
 
+  wrapper.appendChild(metrics);
 
-  if (years.length) {
-
-    const labelIndexes =
-      years.length <= 6
-        ? years.map((_, i) => i)
-        : [
-            0,
-            Math.floor(
-              years.length / 2
-            ),
-            years.length - 1
-          ];
-
-    [...new Set(labelIndexes)]
-      .forEach(index => {
-
-        const point =
-          points[index];
-
-        svg += `
-          <text
-            class="chart-label"
-            x="${point.x}"
-            y="${height - 8}"
-            text-anchor="middle"
-          >
-            ${years[index]}
-          </text>
-        `;
-      });
-  }
-
-  svg += "</svg>";
-
-  yearChart.innerHTML =
-    svg;
-
-
-  yearChart
-    .querySelectorAll(".chart-dot")
-    .forEach(dot => {
-
-      dot.addEventListener(
-        "mouseenter",
-        event => {
-
-          showTooltip(
-            event,
-            `${dot.dataset.year}: ${dot.dataset.value} entries`
-          );
-        }
-      );
-
-      dot.addEventListener(
-        "mouseleave",
-        hideTooltip
-      );
-    });
+  yearSummary.appendChild(wrapper);
 }
 
 

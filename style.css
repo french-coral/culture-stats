@@ -312,12 +312,6 @@ select {
 
 
 .year-summary {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr 1fr;
-
-  gap: 8px;
-
   margin-top: 12px;
 }
 
@@ -325,47 +319,88 @@ select {
   display: none;
 }
 
-.year-summary-row {
+.year-summary-content {
+  width: 100%;
+}
+
+.year-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.year-summary-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.year-summary-header p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.year-summary-select {
+  min-width: 82px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg-strong);
+  color: var(--text);
+  font-size: 11px;
+}
+
+.year-summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.year-summary-metric {
   display: flex;
   flex-direction: column;
-
   justify-content: center;
-
-  min-height: 95px;
-
+  min-height: 78px;
   padding: 12px;
-
   background: var(--card-bg-strong);
-
   border: 1px solid var(--border);
-
   border-radius: 10px;
 }
 
 .year-summary-value {
-  font-size: 24px;
+  font-size: 23px;
   line-height: 1;
-
   font-weight: 700;
 }
 
 .year-summary-label {
   margin-top: 7px;
-
   color: var(--muted);
-
   font-size: 10px;
   line-height: 1.3;
 }
 
+.year-summary-empty {
+  padding: 20px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 @media (max-width: 480px) {
 
-  .year-summary {
+  .year-summary-header {
+    align-items: flex-start;
+  }
+
+  .year-summary-metrics {
     grid-template-columns: 1fr;
   }
 
-  .year-summary-row {
-    min-height: 65px;
+  .year-summary-metric {
+    min-height: 62px;
   }
 }
 
