@@ -78,6 +78,21 @@ const tooltip =
 const themeToggle =
   document.getElementById("theme-toggle");
 
+const heatmapToggle =
+  document.getElementById("heatmap-toggle");
+
+const curveToggle =
+  document.getElementById("curve-toggle");
+
+const heatmapView =
+  document.getElementById("heatmap-view");
+
+const curveView =
+  document.getElementById("curve-view");
+
+const activityDescription =
+  document.getElementById("activity-description");
+
 
 /* ------------------------------
    THEME
@@ -1124,6 +1139,47 @@ function renderHeatmap(databaseStats) {
   );
 }
 
+function setActivityView(view) {
+
+  const isHeatmap = view === "heatmap";
+
+  heatmapView.classList.toggle(
+    "active",
+    isHeatmap
+  );
+
+  curveView.classList.toggle(
+    "active",
+    !isHeatmap
+  );
+
+  heatmapToggle.classList.toggle(
+    "active",
+    isHeatmap
+  );
+
+  curveToggle.classList.toggle(
+    "active",
+    !isHeatmap
+  );
+
+  activityDescription.textContent =
+    isHeatmap
+      ? "Entries added to your databases"
+      : "Number of entries added each year";
+}
+
+
+heatmapToggle.addEventListener(
+  "click",
+  () => setActivityView("heatmap")
+);
+
+
+curveToggle.addEventListener(
+  "click",
+  () => setActivityView("curve")
+);
 
 /* ------------------------------
    DASHBOARD
@@ -1133,7 +1189,6 @@ function renderDashboard() {
 
   const databaseStats =
     getCurrentStats();
-
 
   renderTotal(databaseStats);
 
@@ -1146,6 +1201,9 @@ function renderDashboard() {
   renderReleaseAge(databaseStats);
 
   setupHeatmapYears(databaseStats);
+
+  // Heatmap is the default view.
+  setActivityView("heatmap");
 }
 
 
