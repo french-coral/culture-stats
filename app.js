@@ -883,6 +883,69 @@ function renderYearSummary() {
 }
 
 
+function renderYearChart() {
+
+  const data = getCurrentData();
+
+  yearChart.innerHTML = "";
+
+  const years = getYears(data);
+
+  if (!years.length) {
+    yearChart.textContent = "No data available.";
+    return;
+  }
+
+  const values = years.map(year => ({
+    year,
+    value: data.years?.[year] || 0
+  }));
+
+  const maxValue = Math.max(
+    1,
+    ...values.map(item => item.value)
+  );
+
+  const chart = document.createElement("div");
+  chart.className = "year-chart-bars";
+
+  values.forEach(item => {
+
+    const row = document.createElement("div");
+    row.className = "year-chart-row";
+
+    const label = document.createElement("span");
+    label.className = "year-chart-label";
+    label.textContent = item.year;
+
+    const barTrack = document.createElement("div");
+    barTrack.className = "year-chart-track";
+
+    const bar = document.createElement("div");
+    bar.className = "year-chart-bar";
+
+    const width =
+      (item.value / maxValue) * 100;
+
+    bar.style.width = `${width}%`;
+
+    const value = document.createElement("span");
+    value.className = "year-chart-value";
+    value.textContent =
+      formatNumber(item.value);
+
+    barTrack.appendChild(bar);
+
+    row.appendChild(label);
+    row.appendChild(barTrack);
+    row.appendChild(value);
+
+    chart.appendChild(row);
+  });
+
+  yearChart.appendChild(chart);
+}
+
 /* --------------------------------------------------
    Release Age
 -------------------------------------------------- */
