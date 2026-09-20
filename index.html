@@ -1,22 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Culture Stats</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        >
 
-<body>
-    <main class="dashboard">
-        <header>
-            <h1>Culture Stats</h1>
-            <p id="updated">Loading...</p>
-        </header>
+        <title>Culture Stats</title>
 
-        <section id="stats" class="stats-grid"></section>
-    </main>
+        <link
+            rel="stylesheet"
+            href="style.css"
+        >
+    </head>
+
+    <body>
+
+        <main class="dashboard">
+
+            <header class="dashboard-header">
+                <div>
+                    <h1>Culture Stats</h1>
+                    <p id="updated">Loading...</p>
+                </div>
+
+                <button
+                    id="theme-toggle"
+                    class="icon-button"
+                    type="button"
+                    aria-label="Toggle theme"
+                    title="Toggle theme"
+                >
+                    ◐
+                </button>
+            </header>
+
+
+            <!-- DATABASE SELECTOR -->
+
+            <section class="controls">
+                <label for="database-select">
+                    Database
+                </label>
+
+                <select id="database-select"></select>
+            </section>
+
+
+            <!-- TOTAL -->
+
+            <section class="section">
+                <div class="section-header">
+                    <div>
+                        <h2>Total entries</h2>
+                        <p>Everything currently in this database</p>
+                    </div>
+                </div>
+
+                <div class="total-card">
+                    <div class="donut">
+                        <div class="donut-value">
+                            <strong id="total-value">0</strong>
+                            <span>entries</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ENTRIES OVER TIME -->
+
+            <section class="section">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Entries over time</h2>
+                        <p>Based on the year you recorded for each entry</p>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="range-start">
+                            From
+                        </label>
+
+                        <select id="range-start"></select>
+
+                        <label for="range-end">
+                            To
+                        </label>
+
+                        <select id="range-end"></select>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div
+                        id="year-chart"
+                        class="year-chart"
+                    ></div>
+                </div>
+
+            </section>
+
+
+            <!-- YEAR SUMMARY -->
+
+            <section class="section">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Year summary</h2>
+                        <p id="summary-year-label"></p>
+                    </div>
+
+                    <select id="summary-year"></select>
+                </div>
+
+                <div class="summary-grid">
+
+                    <div class="metric-card">
+                        <span>Total entries</span>
+                        <strong id="summary-total">0</strong>
+                    </div>
+
+                    <div class="metric-card">
+                        <span>Active months</span>
+                        <strong id="summary-months">0</strong>
+                    </div>
+
+                    <div class="metric-card">
+                        <span>Average / active month</span>
+                        <strong id="summary-average">0</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- RATING -->
+
+            <section class="section">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Rating distribution</h2>
+                        <p id="rating-average">Average rating: —</p>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+
+                    <div
+                        id="rating-chart"
+                        class="rating-chart"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- RELEASE AGE -->
+
+            <section class="section">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Average release age</h2>
+                        <p>
+                            Difference between release year and recorded year
+                        </p>
+                    </div>
+                </div>
+
+                <div class="metric-card release-age-card">
+
+                    <strong id="release-age">
+                        —
+                    </strong>
+
+                    <span>
+                        years old on average
+                    </span>
+
+                    <small id="release-age-coverage"></small>
+
+                </div>
+
+            </section>
+
+
+            <!-- HEATMAP -->
+
+            <section class="section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>Added to your database</h2>
+                        <p>
+                            Each square represents one day
+                        </p>
+                    </div>
+
+                    <select id="heatmap-year"></select>
+
+                </div>
+
+                <div class="heatmap-card">
+
+                    <div
+                        id="heatmap"
+                        class="heatmap"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+        </main>
 
     <script src="app.js"></script>
-</body>
+
+    </body>
 </html>
