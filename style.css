@@ -1,8 +1,8 @@
 :root {
-  --page-bg: transparent;
+  --page-bg: #f6f6f3;
 
-  --card-bg: rgba(255, 255, 255, 0.72);
-  --card-bg-strong: rgba(255, 255, 255, 0.92);
+  --card-bg: #ffffff;
+  --card-bg-strong: #ffffff;
 
   --text: #202020;
   --muted: #777777;
@@ -22,8 +22,10 @@
 
 
 html[data-theme="dark"] {
-  --card-bg: rgba(30, 30, 30, 0.72);
-  --card-bg-strong: rgba(30, 30, 30, 0.94);
+  --page-bg: #171717;
+
+  --card-bg: #222222;
+  --card-bg-strong: #222222;
 
   --text: #eeeeee;
   --muted: #999999;
@@ -52,7 +54,7 @@ body {
   margin: 0;
   padding: 0;
 
-  background: transparent;
+  background: var(--page-bg);
 
   color: var(--text);
 

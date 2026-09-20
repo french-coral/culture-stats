@@ -1140,33 +1140,21 @@ function renderHeatmap(databaseStats) {
 }
 
 function setActivityView(view) {
-
   const isHeatmap = view === "heatmap";
 
-  heatmapView.classList.toggle(
-    "active",
-    isHeatmap
-  );
+  heatmapView.classList.toggle("active", isHeatmap);
+  curveView.classList.toggle("active", !isHeatmap);
 
-  curveView.classList.toggle(
-    "active",
-    !isHeatmap
-  );
-
-  heatmapToggle.classList.toggle(
-    "active",
-    isHeatmap
-  );
-
-  curveToggle.classList.toggle(
-    "active",
-    !isHeatmap
-  );
+  heatmapToggle.classList.toggle("active", isHeatmap);
+  curveToggle.classList.toggle("active", !isHeatmap);
 
   activityDescription.textContent =
     isHeatmap
       ? "Entries added to your databases"
       : "Number of entries added each year";
+
+  document.querySelector(".range-controls").style.display =
+    isHeatmap ? "none" : "flex";
 }
 
 
