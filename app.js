@@ -1,844 +1,1202 @@
 let stats = null;
-let currentDatabase = null;
+let selectedDatabase = "all";
 
-const themeQuery = window.matchMedia(
+const DB_COLORS = {
+  video_games: "var(--db-video-games)",
+  games: "var(--db-games)",
+  reads: "var(--db-reads)",
+  multimedia: "var(--db-multimedia)",
+  music: "var(--db-music)"
+};
+
+const DB_NAMES = {
+  video_games: "Video Games",
+  games: "Games",
+  reads: "Reads",
+  multimedia: "Multimedia",
+  music: "Music"
+};
+
+
+const databaseSelect =
+  document.getElementById("database-select");
+
+const totalNumber =
+  document.getElementById("total-number");
+
+const donut =
+  document.getElementById("donut");
+
+const databaseLegend =
+  document.getElementById("database-legend");
+
+const yearFrom =
+  document.getElementById("year-from");
+
+const yearTo =
+  document.getElementById("year-to");
+
+const yearChart =
+  document.getElementById("year-chart");
+
+const summaryYear =
+  document.getElementById("summary-year");
+
+const summaryTotal =
+  document.getElementById("summary-total");
+
+const summaryMonths =
+  document.getElementById("summary-months");
+
+const summaryAverage =
+  document.getElementById("summary-average");
+
+const ratingChart =
+  document.getElementById("rating-chart");
+
+const ratingAverage =
+  document.getElementById("rating-average");
+
+const releaseAgeValue =
+  document.getElementById("release-age-value");
+
+const releaseAgeCount =
+  document.getElementById("release-age-count");
+
+const heatmapYear =
+  document.getElementById("heatmap-year");
+
+const heatmap =
+  document.getElementById("heatmap");
+
+const updated =
+  document.getElementById("updated");
+
+const tooltip =
+  document.getElementById("tooltip");
+
+const themeToggle =
+  document.getElementById("theme-toggle");
+
+
+/* ------------------------------
+   THEME
+------------------------------ */
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+
+  localStorage.setItem(
+    "culture-stats-theme",
+    theme
+  );
+}
+
+
+function getInitialTheme() {
+  const saved =
+    localStorage.getItem("culture-stats-theme");
+
+  if (saved === "light" || saved === "dark") {
+    return saved;
+  }
+
+  return window.matchMedia(
     "(prefers-color-scheme: dark)"
-);
-
-
-// --------------------------------------------------
-// THEME
-// --------------------------------------------------
-
-function applyTheme() {
-    const savedTheme =
-        localStorage.getItem("theme");
-
-    document.documentElement.classList.remove(
-        "light",
-        "dark"
-    );
-
-    if (savedTheme === "light") {
-        document.documentElement.classList.add(
-            "light"
-        );
-    } else if (savedTheme === "dark") {
-        document.documentElement.classList.add(
-            "dark"
-        );
-    } else {
-        document.documentElement.classList.add(
-            themeQuery.matches
-                ? "dark"
-                : "light"
-        );
-    }
-}
-
-document
-    .getElementById("theme-toggle")
-    .addEventListener("click", () => {
-
-        const isDark =
-            document.documentElement.classList.contains(
-                "dark"
-            );
-
-        localStorage.setItem(
-            "theme",
-            isDark ? "light" : "dark"
-        );
-
-        applyTheme();
-    });
-
-themeQuery.addEventListener(
-    "change",
-    () => {
-
-        if (!localStorage.getItem("theme")) {
-            applyTheme();
-        }
-    }
-);
-
-applyTheme();
-
-
-// --------------------------------------------------
-// HELPERS
-// --------------------------------------------------
-
-function getYears(database) {
-    return Object.keys(database.years)
-        .map(Number)
-        .sort((a, b) => a - b);
+  ).matches
+    ? "dark"
+    : "light";
 }
 
 
-function createOption(
-    value,
-    label = value
-) {
-    const option =
-        document.createElement("option");
+applyTheme(getInitialTheme());
 
-    option.value = value;
-    option.textContent = label;
 
-    return option;
+themeToggle.addEventListener("click", () => {
+  const current =
+    document.documentElement.dataset.theme;
+
+  applyTheme(
+    current === "dark"
+      ? "light"
+      : "dark"
+  );
+});
+
+
+/* ------------------------------
+   HELPERS
+------------------------------ */
+
+function getCurrentStats() {
+  return stats.databases[selectedDatabase];
 }
 
 
-function populateSelect(
-    select,
-    values
-) {
-    select.innerHTML = "";
-
-    for (const value of values) {
-        select.appendChild(
-            createOption(value)
-        );
-    }
+function getYears(databaseStats) {
+  return Object.keys(databaseStats.years)
+    .map(Number)
+    .sort((a, b) => a - b);
 }
 
 
-// --------------------------------------------------
-// DATABASE
-// --------------------------------------------------
+function formatNumber(value) {
+  return Number(value).toLocaleString();
+}
+
+
+function showTooltip(event, text) {
+  tooltip.textContent = text;
+
+  tooltip.style.left =
+    `${event.clientX}px`;
+
+  tooltip.style.top =
+    `${event.clientY}px`;
+
+  tooltip.classList.add("visible");
+}
+
+
+function hideTooltip() {
+  tooltip.classList.remove("visible");
+}
+
+
+/* ------------------------------
+   DATABASE SELECTOR
+------------------------------ */
 
 function setupDatabaseSelector() {
 
-    const select =
-        document.getElementById(
-            "database-select"
-        );
+  databaseSelect.innerHTML = "";
 
-    select.innerHTML = "";
+  Object.entries(stats.databases)
+    .forEach(([key, database]) => {
 
-    for (
-        const [key, database]
-        of Object.entries(
-            stats.databases
-        )
-    ) {
+      const option =
+        document.createElement("option");
 
-        const option =
-            createOption(
-                key,
-                database.name
-            );
+      option.value = key;
+      option.textContent = database.name;
 
-        select.appendChild(option);
+      databaseSelect.appendChild(option);
+    });
+
+  databaseSelect.value = "all";
+  selectedDatabase = "all";
+}
+
+
+databaseSelect.addEventListener(
+  "change",
+  () => {
+
+    selectedDatabase =
+      databaseSelect.value;
+
+    renderDashboard();
+  }
+);
+
+
+/* ------------------------------
+   TOTAL / DONUT
+------------------------------ */
+
+function renderTotal(databaseStats) {
+
+  totalNumber.textContent =
+    formatNumber(databaseStats.total);
+
+
+  if (selectedDatabase !== "all") {
+
+    donut.style.background =
+      "conic-gradient(var(--accent) 0deg 360deg)";
+
+    databaseLegend.innerHTML = "";
+
+    return;
+  }
+
+
+  const breakdown =
+    databaseStats.breakdown || {};
+
+
+  const entries =
+    Object.entries(breakdown)
+      .filter(([, count]) => count > 0);
+
+
+  if (!entries.length) {
+
+    donut.style.background =
+      "conic-gradient(var(--bar-bg) 0deg 360deg)";
+
+    databaseLegend.innerHTML = "";
+
+    return;
+  }
+
+
+  const total =
+    databaseStats.total;
+
+
+  let currentAngle = 0;
+
+  const gradients = [];
+
+
+  for (const [key, count] of entries) {
+
+    const angle =
+      (count / total) * 360;
+
+    const nextAngle =
+      currentAngle + angle;
+
+    gradients.push(
+      `${DB_COLORS[key]} ${currentAngle}deg ${nextAngle}deg`
+    );
+
+    currentAngle = nextAngle;
+  }
+
+
+  donut.style.background =
+    `conic-gradient(${gradients.join(", ")})`;
+
+
+  databaseLegend.innerHTML = "";
+
+
+  for (const [key, count] of entries) {
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "legend-item";
+
+
+    const dot =
+      document.createElement("span");
+
+    dot.className =
+      "legend-dot";
+
+    dot.style.background =
+      DB_COLORS[key];
+
+
+    const name =
+      document.createElement("span");
+
+    name.className =
+      "legend-name";
+
+    name.textContent =
+      DB_NAMES[key] || key;
+
+
+    const countElement =
+      document.createElement("span");
+
+    countElement.className =
+      "legend-count";
+
+    countElement.textContent =
+      formatNumber(count);
+
+
+    item.append(
+      dot,
+      name,
+      countElement
+    );
+
+    databaseLegend.appendChild(item);
+  }
+}
+
+
+/* ------------------------------
+   YEAR RANGE
+------------------------------ */
+
+function setupYearSelectors(databaseStats) {
+
+  const years =
+    getYears(databaseStats);
+
+
+  yearFrom.innerHTML = "";
+  yearTo.innerHTML = "";
+
+
+  if (!years.length) {
+    yearChart.innerHTML =
+      `<div class="chart-empty">No data yet.</div>`;
+
+    return;
+  }
+
+
+  for (const year of years) {
+
+    const fromOption =
+      document.createElement("option");
+
+    fromOption.value = year;
+    fromOption.textContent = year;
+
+    yearFrom.appendChild(fromOption);
+
+
+    const toOption =
+      document.createElement("option");
+
+    toOption.value = year;
+    toOption.textContent = year;
+
+    yearTo.appendChild(toOption);
+  }
+
+
+  yearFrom.value =
+    years[0];
+
+  yearTo.value =
+    years[years.length - 1];
+
+
+  renderYearChart(databaseStats);
+}
+
+
+yearFrom.addEventListener(
+  "change",
+  () => {
+
+    const databaseStats =
+      getCurrentStats();
+
+    renderYearChart(databaseStats);
+  }
+);
+
+
+yearTo.addEventListener(
+  "change",
+  () => {
+
+    const databaseStats =
+      getCurrentStats();
+
+    renderYearChart(databaseStats);
+  }
+);
+
+
+/* ------------------------------
+   CURVED YEAR CHART
+------------------------------ */
+
+function renderYearChart(databaseStats) {
+
+  const years =
+    getYears(databaseStats);
+
+
+  let from =
+    Number(yearFrom.value);
+
+  let to =
+    Number(yearTo.value);
+
+
+  if (!from || !to) {
+    return;
+  }
+
+
+  if (from > to) {
+    [from, to] = [to, from];
+  }
+
+
+  const visibleYears =
+    years.filter(
+      year => year >= from && year <= to
+    );
+
+
+  if (!visibleYears.length) {
+
+    yearChart.innerHTML =
+      `<div class="chart-empty">No data for this range.</div>`;
+
+    return;
+  }
+
+
+  const values =
+    visibleYears.map(
+      year => databaseStats.years[String(year)] || 0
+    );
+
+
+  const width = 1000;
+  const height = 300;
+
+  const paddingLeft = 52;
+  const paddingRight = 18;
+  const paddingTop = 20;
+  const paddingBottom = 38;
+
+
+  const chartWidth =
+    width - paddingLeft - paddingRight;
+
+  const chartHeight =
+    height - paddingTop - paddingBottom;
+
+
+  const maxValue =
+    Math.max(...values, 1);
+
+
+  const yMax =
+    Math.ceil(maxValue / 5) * 5 || 1;
+
+
+  function xFor(index) {
+
+    if (visibleYears.length === 1) {
+      return paddingLeft + chartWidth / 2;
     }
 
-    select.value =
-        Object.keys(
-            stats.databases
-        )[0];
+    return (
+      paddingLeft +
+      (index / (visibleYears.length - 1)) *
+      chartWidth
+    );
+  }
 
-    select.addEventListener(
-        "change",
-        () => {
 
-            currentDatabase =
-                stats.databases[
-                    select.value
-                ];
+  function yFor(value) {
 
-            renderAll();
+    return (
+      paddingTop +
+      chartHeight -
+      (value / yMax) * chartHeight
+    );
+  }
+
+
+  const points =
+    values.map(
+      (value, index) => ({
+        x: xFor(index),
+        y: yFor(value),
+        value,
+        year: visibleYears[index]
+      })
+    );
+
+
+  /* Grid */
+
+  const gridCount = 5;
+
+  let grid = "";
+
+  for (let i = 0; i <= gridCount; i++) {
+
+    const value =
+      (yMax / gridCount) * i;
+
+    const y =
+      yFor(value);
+
+
+    grid += `
+      <line
+        class="chart-grid-line"
+        x1="${paddingLeft}"
+        y1="${y}"
+        x2="${width - paddingRight}"
+        y2="${y}"
+      />
+
+      <text
+        class="chart-axis-label"
+        x="${paddingLeft - 10}"
+        y="${y + 4}"
+        text-anchor="end"
+      >
+        ${Math.round(value)}
+      </text>
+    `;
+  }
+
+
+  /* X labels */
+
+  let labels = "";
+
+  points.forEach(point => {
+
+    labels += `
+      <text
+        class="chart-axis-label"
+        x="${point.x}"
+        y="${height - 10}"
+        text-anchor="middle"
+      >
+        ${point.year}
+      </text>
+    `;
+  });
+
+
+  /* Curved line */
+
+  let linePath = "";
+
+  if (points.length === 1) {
+
+    linePath =
+      `M ${points[0].x} ${points[0].y}`;
+
+  } else {
+
+    linePath =
+      `M ${points[0].x} ${points[0].y}`;
+
+    for (let i = 0; i < points.length - 1; i++) {
+
+      const current =
+        points[i];
+
+      const next =
+        points[i + 1];
+
+      const dx =
+        (next.x - current.x) / 3;
+
+
+      linePath += `
+        C
+        ${current.x + dx} ${current.y},
+        ${next.x - dx} ${next.y},
+        ${next.x} ${next.y}
+      `;
+    }
+  }
+
+
+  /* Area below line */
+
+  const areaPath =
+    `${linePath}
+     L ${points[points.length - 1].x} ${paddingTop + chartHeight}
+     L ${points[0].x} ${paddingTop + chartHeight}
+     Z`;
+
+
+  /* Points */
+
+  let dots = "";
+
+  points.forEach(point => {
+
+    dots += `
+      <circle
+        class="chart-dot"
+        cx="${point.x}"
+        cy="${point.y}"
+        r="5"
+        data-year="${point.year}"
+        data-value="${point.value}"
+      />
+    `;
+  });
+
+
+  yearChart.innerHTML = `
+    <svg
+      viewBox="0 0 ${width} ${height}"
+      preserveAspectRatio="none"
+      aria-label="Entries over time"
+    >
+
+      ${grid}
+
+      <path
+        class="chart-area"
+        d="${areaPath}"
+      />
+
+      <path
+        class="chart-line"
+        d="${linePath}"
+      />
+
+      ${dots}
+
+      ${labels}
+
+    </svg>
+  `;
+
+
+  yearChart
+    .querySelectorAll(".chart-dot")
+    .forEach(dot => {
+
+      dot.addEventListener(
+        "mouseenter",
+        event => {
+
+          const year =
+            event.target.dataset.year;
+
+          const value =
+            event.target.dataset.value;
+
+          showTooltip(
+            event,
+            `${year}: ${formatNumber(value)} entries`
+          );
         }
-    );
-}
+      );
 
 
-// --------------------------------------------------
-// TOTAL
-// --------------------------------------------------
+      dot.addEventListener(
+        "mousemove",
+        event => {
 
-function renderTotal() {
+          tooltip.style.left =
+            `${event.clientX}px`;
 
-    document.getElementById(
-        "total-value"
-    ).textContent =
-        currentDatabase.total;
-}
-
-
-// --------------------------------------------------
-// YEAR CHART
-// --------------------------------------------------
-
-function setupYearRange() {
-
-    const years =
-        getYears(currentDatabase);
-
-    const start =
-        document.getElementById(
-            "range-start"
-        );
-
-    const end =
-        document.getElementById(
-            "range-end"
-        );
-
-    populateSelect(start, years);
-    populateSelect(end, years);
-
-    start.value = years[0];
-    end.value = years[years.length - 1];
-
-    start.onchange = renderYearChart;
-    end.onchange = renderYearChart;
-}
-
-
-function renderYearChart() {
-
-    const years =
-        getYears(currentDatabase);
-
-    let start =
-        Number(
-            document.getElementById(
-                "range-start"
-            ).value
-        );
-
-    let end =
-        Number(
-            document.getElementById(
-                "range-end"
-            ).value
-        );
-
-    if (start > end) {
-        [start, end] =
-            [end, start];
-
-        document.getElementById(
-            "range-start"
-        ).value = start;
-
-        document.getElementById(
-            "range-end"
-        ).value = end;
-    }
-
-    const chart =
-        document.getElementById(
-            "year-chart"
-        );
-
-    chart.innerHTML = "";
-
-    const selectedYears =
-        years.filter(
-            year =>
-                year >= start &&
-                year <= end
-        );
-
-    const values =
-        selectedYears.map(
-            year =>
-                currentDatabase.years[
-                    String(year)
-                ] || 0
-        );
-
-    const max =
-        Math.max(...values, 1);
-
-    for (
-        let index = 0;
-        index < selectedYears.length;
-        index++
-    ) {
-
-        const year =
-            selectedYears[index];
-
-        const value =
-            values[index];
-
-        const column =
-            document.createElement(
-                "div"
-            );
-
-        column.className =
-            "year-column";
-
-        const valueElement =
-            document.createElement(
-                "div"
-            );
-
-        valueElement.className =
-            "year-value";
-
-        valueElement.textContent =
-            value;
-
-        const barArea =
-            document.createElement(
-                "div"
-            );
-
-        barArea.className =
-            "year-bar-area";
-
-        const bar =
-            document.createElement(
-                "div"
-            );
-
-        bar.className =
-            "year-bar";
-
-        bar.style.height =
-            `${(value / max) * 100}%`;
-
-        bar.title =
-            `${value} entries in ${year}`;
-
-        const label =
-            document.createElement(
-                "div"
-            );
-
-        label.className =
-            "year-label";
-
-        label.textContent =
-            year;
-
-        barArea.appendChild(bar);
-
-        column.appendChild(
-            valueElement
-        );
-
-        column.appendChild(
-            barArea
-        );
-
-        column.appendChild(
-            label
-        );
-
-        chart.appendChild(column);
-    }
-}
-
-
-// --------------------------------------------------
-// YEAR SUMMARY
-// --------------------------------------------------
-
-function setupSummaryYears() {
-
-    const years =
-        Object.keys(
-            currentDatabase.year_stats
-        )
-        .map(Number)
-        .sort(
-            (a, b) => a - b
-        );
-
-    const select =
-        document.getElementById(
-            "summary-year"
-        );
-
-    populateSelect(
-        select,
-        years
-    );
-
-    select.value =
-        years[years.length - 1];
-
-    select.onchange =
-        renderYearSummary;
-}
-
-
-function renderYearSummary() {
-
-    const year =
-        document.getElementById(
-            "summary-year"
-        ).value;
-
-    const data =
-        currentDatabase.year_stats[
-            year
-        ];
-
-    document.getElementById(
-        "summary-year-label"
-    ).textContent =
-        `Statistics for ${year}`;
-
-    if (!data) {
-        document.getElementById(
-            "summary-total"
-        ).textContent = "0";
-
-        document.getElementById(
-            "summary-months"
-        ).textContent = "0";
-
-        document.getElementById(
-            "summary-average"
-        ).textContent = "0";
-
-        return;
-    }
-
-    document.getElementById(
-        "summary-total"
-    ).textContent =
-        data.total;
-
-    document.getElementById(
-        "summary-months"
-    ).textContent =
-        data.active_months;
-
-    document.getElementById(
-        "summary-average"
-    ).textContent =
-        data.average_per_active_month;
-}
-
-
-// --------------------------------------------------
-// RATINGS
-// --------------------------------------------------
-
-function renderRatings() {
-
-    const chart =
-        document.getElementById(
-            "rating-chart"
-        );
-
-    chart.innerHTML = "";
-
-    const distribution =
-        currentDatabase.ratings
-            .distribution;
-
-    const values =
-        Object.entries(
-            distribution
-        );
-
-    const max =
-        Math.max(
-            ...values.map(
-                ([, value]) =>
-                    value
-            ),
-            1
-        );
-
-    for (
-        const [rating, value]
-        of values
-    ) {
-
-        const row =
-            document.createElement(
-                "div"
-            );
-
-        row.className =
-            "rating-row";
-
-        const label =
-            document.createElement(
-                "div"
-            );
-
-        label.className =
-            "rating-label";
-
-        label.textContent =
-            Number(rating) > 0
-                ? `+${rating}`
-                : rating;
-
-        const track =
-            document.createElement(
-                "div"
-            );
-
-        track.className =
-            "rating-track";
-
-        const bar =
-            document.createElement(
-                "div"
-            );
-
-        bar.className =
-            "rating-bar";
-
-        bar.style.width =
-            `${(value / max) * 100}%`;
-
-        track.appendChild(bar);
-
-        const valueElement =
-            document.createElement(
-                "div"
-            );
-
-        valueElement.className =
-            "rating-value";
-
-        valueElement.textContent =
-            value;
-
-        row.appendChild(label);
-        row.appendChild(track);
-        row.appendChild(
-            valueElement
-        );
-
-        chart.appendChild(row);
-    }
-
-    const average =
-        currentDatabase.ratings.average;
-
-    document.getElementById(
-        "rating-average"
-    ).textContent =
-        average === null
-            ? "Average rating: —"
-            : `Average rating: ${
-                average > 0
-                    ? "+" + average
-                    : average
-            }`;
-}
-
-
-// --------------------------------------------------
-// RELEASE AGE
-// --------------------------------------------------
-
-function renderReleaseAge() {
-
-    const data =
-        currentDatabase.release_age;
-
-    document.getElementById(
-        "release-age"
-    ).textContent =
-        data.average === null
-            ? "—"
-            : data.average;
-
-    document.getElementById(
-        "release-age-coverage"
-    ).textContent =
-        data.average === null
-            ? "No usable release-date data"
-            : `${data.entries_with_data} entries with release and consumption years`;
-}
-
-
-// --------------------------------------------------
-// HEATMAP
-// --------------------------------------------------
-
-function setupHeatmapYears() {
-
-    const years =
-        new Set();
-
-    for (
-        const date
-        of Object.keys(
-            currentDatabase.heatmap
-        )
-    ) {
-
-        years.add(
-            Number(
-                date.slice(0, 4)
-            )
-        );
-    }
-
-    const sortedYears =
-        [...years].sort(
-            (a, b) => a - b
-        );
-
-    const select =
-        document.getElementById(
-            "heatmap-year"
-        );
-
-    populateSelect(
-        select,
-        sortedYears
-    );
-
-    select.value =
-        sortedYears[
-            sortedYears.length - 1
-        ];
-
-    select.onchange =
-        renderHeatmap;
-}
-
-
-function getHeatLevel(
-    value,
-    max
-) {
-
-    if (!value) {
-        return 0;
-    }
-
-    if (max <= 1) {
-        return 4;
-    }
-
-    const ratio =
-        value / max;
-
-    if (ratio <= 0.25) return 1;
-    if (ratio <= 0.5) return 2;
-    if (ratio <= 0.75) return 3;
-
-    return 4;
-}
-
-
-function renderHeatmap() {
-
-    const year =
-        Number(
-            document.getElementById(
-                "heatmap-year"
-            ).value
-        );
-
-    const container =
-        document.getElementById(
-            "heatmap"
-        );
-
-    container.innerHTML = "";
-
-    const heatmap =
-        currentDatabase.heatmap;
-
-    const values =
-        Object.entries(heatmap)
-            .filter(
-                ([date]) =>
-                    Number(
-                        date.slice(0, 4)
-                    ) === year
-            )
-            .map(
-                ([, value]) =>
-                    value
-            );
-
-    const max =
-        Math.max(...values, 1);
-
-    const start =
-        new Date(
-            Date.UTC(
-                year,
-                0,
-                1
-            )
-        );
-
-    const end =
-        new Date(
-            Date.UTC(
-                year + 1,
-                0,
-                1
-            )
-        );
-
-    // Move back to Monday.
-    const startDay =
-        (start.getUTCDay() + 6) % 7;
-
-    start.setUTCDate(
-        start.getUTCDate() -
-        startDay
-    );
-
-    while (start < end) {
-
-        for (
-            let day = 0;
-            day < 7;
-            day++
-        ) {
-
-            const current =
-                new Date(start);
-
-            current.setUTCDate(
-                current.getUTCDate() +
-                day
-            );
-
-            const iso =
-                current
-                    .toISOString()
-                    .slice(0, 10);
-
-            const cell =
-                document.createElement(
-                    "div"
-                );
-
-            cell.className =
-                "heat-cell";
-
-            const count =
-                heatmap[iso] || 0;
-
-            cell.dataset.level =
-                getHeatLevel(
-                    count,
-                    max
-                );
-
-            if (
-                current.getUTCFullYear() ===
-                year
-            ) {
-
-                const dateLabel =
-                    current.toLocaleDateString(
-                        undefined,
-                        {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        }
-                    );
-
-                cell.title =
-                    `${dateLabel}: ${count} ${
-                        count === 1
-                            ? "entry"
-                            : "entries"
-                    }`;
-            } else {
-                cell.style.visibility =
-                    "hidden";
-            }
-
-            container.appendChild(cell);
+          tooltip.style.top =
+            `${event.clientY}px`;
         }
+      );
 
-        start.setUTCDate(
-            start.getUTCDate() + 7
-        );
+
+      dot.addEventListener(
+        "mouseleave",
+        hideTooltip
+      );
+    });
+}
+
+
+/* ------------------------------
+   YEAR SUMMARY
+------------------------------ */
+
+function setupSummaryYears(databaseStats) {
+
+  const years =
+    getYears(databaseStats);
+
+  summaryYear.innerHTML = "";
+
+
+  if (!years.length) {
+    return;
+  }
+
+
+  years.forEach(year => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = year;
+    option.textContent = year;
+
+    summaryYear.appendChild(option);
+  });
+
+
+  summaryYear.value =
+    years[years.length - 1];
+
+
+  renderYearSummary(databaseStats);
+}
+
+
+summaryYear.addEventListener(
+  "change",
+  () => {
+
+    renderYearSummary(
+      getCurrentStats()
+    );
+  }
+);
+
+
+function renderYearSummary(databaseStats) {
+
+  const year =
+    summaryYear.value;
+
+
+  const data =
+    databaseStats.year_stats[year];
+
+
+  if (!data) {
+
+    summaryTotal.textContent = "0";
+    summaryMonths.textContent = "0";
+    summaryAverage.textContent = "0";
+
+    return;
+  }
+
+
+  summaryTotal.textContent =
+    formatNumber(data.total);
+
+
+  summaryMonths.textContent =
+    data.active_months;
+
+
+  summaryAverage.textContent =
+    data.average_per_active_month;
+}
+
+
+/* ------------------------------
+   RATINGS
+------------------------------ */
+
+function renderRatings(databaseStats) {
+
+  const distribution =
+    databaseStats.ratings.distribution;
+
+
+  const ratings = [
+    [5, "★★★★★"],
+    [4, "★★★★"],
+    [3, "★★★"],
+    [2, "★★"],
+    [1, "★"],
+    [-1, "☆"],
+    [-2, "☆☆"],
+    [-3, "☆☆☆"],
+    [-4, "☆☆☆☆"],
+    [-5, "☆☆☆☆☆"]
+  ];
+
+
+  const counts =
+    ratings.map(
+      ([rating]) =>
+        distribution[String(rating)] || 0
+    );
+
+
+  const maxCount =
+    Math.max(...counts, 1);
+
+
+  ratingChart.innerHTML = "";
+
+
+  ratings.forEach(
+    ([rating, label], index) => {
+
+      const count =
+        counts[index];
+
+
+      const percentage =
+        (count / maxCount) * 100;
+
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "rating-row";
+
+
+      row.innerHTML = `
+        <span class="rating-label">
+          ${label}
+        </span>
+
+        <div class="rating-track">
+          <div
+            class="rating-fill"
+            style="width: ${percentage}%"
+          ></div>
+        </div>
+
+        <span class="rating-count">
+          ${formatNumber(count)}
+        </span>
+      `;
+
+
+      ratingChart.appendChild(row);
     }
+  );
+
+
+  const average =
+    databaseStats.ratings.average;
+
+
+  ratingAverage.textContent =
+    average === null
+      ? "Average: —"
+      : `Average: ${average > 0 ? "+" : ""}${average}`;
 }
 
 
-// --------------------------------------------------
-// RENDER EVERYTHING
-// --------------------------------------------------
+/* ------------------------------
+   RELEASE AGE
+------------------------------ */
 
-function renderAll() {
+function renderReleaseAge(databaseStats) {
 
-    renderTotal();
+  const age =
+    databaseStats.release_age.average;
 
-    setupYearRange();
-    renderYearChart();
 
-    setupSummaryYears();
-    renderYearSummary();
+  if (age === null) {
 
-    renderRatings();
+    releaseAgeValue.textContent =
+      "—";
 
-    renderReleaseAge();
+    releaseAgeCount.textContent =
+      "No release-date data available.";
 
-    setupHeatmapYears();
-    renderHeatmap();
+    return;
+  }
+
+
+  releaseAgeValue.textContent =
+    age;
+
+
+  releaseAgeCount.textContent =
+    `${formatNumber(
+      databaseStats.release_age.entries_with_data
+    )} entries with release-date data`;
 }
 
 
-// --------------------------------------------------
-// LOAD DATA
-// --------------------------------------------------
+/* ------------------------------
+   HEATMAP
+------------------------------ */
+
+function setupHeatmapYears(databaseStats) {
+
+  const dates =
+    Object.keys(databaseStats.heatmap);
+
+
+  const years =
+    [...new Set(
+      dates.map(
+        date => Number(date.slice(0, 4))
+      )
+    )].sort(
+      (a, b) => a - b
+    );
+
+
+  heatmapYear.innerHTML = "";
+
+
+  if (!years.length) {
+    heatmap.innerHTML = "";
+    return;
+  }
+
+
+  years.forEach(year => {
+
+    const option =
+      document.createElement("option");
+
+    option.value = year;
+    option.textContent = year;
+
+    heatmapYear.appendChild(option);
+  });
+
+
+  heatmapYear.value =
+    years[years.length - 1];
+
+
+  renderHeatmap(databaseStats);
+}
+
+
+heatmapYear.addEventListener(
+  "change",
+  () => {
+
+    renderHeatmap(
+      getCurrentStats()
+    );
+  }
+);
+
+
+function renderHeatmap(databaseStats) {
+
+  const year =
+    Number(heatmapYear.value);
+
+
+  const dates =
+    Object.keys(databaseStats.heatmap)
+      .filter(
+        date =>
+          Number(date.slice(0, 4)) === year
+      );
+
+
+  if (!dates.length) {
+
+    heatmap.innerHTML =
+      `<div class="chart-empty">No activity this year.</div>`;
+
+    return;
+  }
+
+
+  const counts =
+    dates.map(
+      date =>
+        databaseStats.heatmap[date]
+    );
+
+
+  const maxCount =
+    Math.max(...counts, 1);
+
+
+  const firstDate =
+    new Date(`${year}-01-01T00:00:00`);
+
+
+  const lastDate =
+    new Date(`${year}-12-31T00:00:00`);
+
+
+  /*
+    Monday = 0
+    Sunday = 6
+  */
+
+  function mondayIndex(date) {
+
+    const day =
+      date.getDay();
+
+    return day === 0
+      ? 6
+      : day - 1;
+  }
+
+
+  const start =
+    new Date(firstDate);
+
+  start.setDate(
+    start.getDate() -
+    mondayIndex(start)
+  );
+
+
+  const end =
+    new Date(lastDate);
+
+  end.setDate(
+    end.getDate() +
+    (6 - mondayIndex(end))
+  );
+
+
+  const cells = [];
+
+
+  for (
+    let date = new Date(start);
+    date <= end;
+    date.setDate(date.getDate() + 1)
+  ) {
+
+    const dateKey =
+      date.toISOString().slice(0, 10);
+
+
+    const count =
+      databaseStats.heatmap[dateKey] || 0;
+
+
+    let level = 0;
+
+
+    if (count > 0) {
+
+      const ratio =
+        count / maxCount;
+
+
+      if (ratio <= 0.25) {
+        level = 1;
+      } else if (ratio <= 0.5) {
+        level = 2;
+      } else if (ratio <= 0.75) {
+        level = 3;
+      } else {
+        level = 4;
+      }
+    }
+
+
+    const cell =
+      document.createElement("div");
+
+    cell.className =
+      `heatmap-cell level-${level}`;
+
+
+    cell.addEventListener(
+      "mouseenter",
+      event => {
+
+        showTooltip(
+          event,
+          `${dateKey}: ${count} ${count === 1 ? "entry" : "entries"}`
+        );
+      }
+    );
+
+
+    cell.addEventListener(
+      "mousemove",
+      event => {
+
+        tooltip.style.left =
+          `${event.clientX}px`;
+
+        tooltip.style.top =
+          `${event.clientY}px`;
+      }
+    );
+
+
+    cell.addEventListener(
+      "mouseleave",
+      hideTooltip
+    );
+
+
+    cells.push(cell);
+  }
+
+
+  heatmap.innerHTML = "";
+
+  cells.forEach(
+    cell => heatmap.appendChild(cell)
+  );
+}
+
+
+/* ------------------------------
+   DASHBOARD
+------------------------------ */
+
+function renderDashboard() {
+
+  const databaseStats =
+    getCurrentStats();
+
+
+  renderTotal(databaseStats);
+
+  setupYearSelectors(databaseStats);
+
+  setupSummaryYears(databaseStats);
+
+  renderRatings(databaseStats);
+
+  renderReleaseAge(databaseStats);
+
+  setupHeatmapYears(databaseStats);
+}
+
+
+/* ------------------------------
+   LOAD DATA
+------------------------------ */
 
 async function loadStats() {
 
+  try {
+
     const response =
-        await fetch(
-            "./stats.json"
-        );
+      await fetch(
+        `stats.json?t=${Date.now()}`
+      );
+
 
     if (!response.ok) {
-        throw new Error(
-            "Could not load stats.json"
-        );
+      throw new Error(
+        `HTTP ${response.status}`
+      );
     }
 
-    stats =
-        await response.json();
 
-    document.getElementById(
-        "updated"
-    ).textContent =
-        `Updated ${
-            new Date(
-                stats.updated_at
-            ).toLocaleString()
-        }`;
+    stats =
+      await response.json();
+
+
+    if (stats.updated_at) {
+
+      const date =
+        new Date(stats.updated_at);
+
+
+      updated.textContent =
+        `Updated ${date.toLocaleString()}`;
+    }
+
 
     setupDatabaseSelector();
 
-    currentDatabase =
-        stats.databases[
-            document.getElementById(
-                "database-select"
-            ).value
-        ];
+    renderDashboard();
 
-    renderAll();
-}
-
-
-loadStats().catch(error => {
+  } catch (error) {
 
     console.error(error);
 
-    document.getElementById(
-        "updated"
-    ).textContent =
-        "Unable to load statistics.";
+    updated.textContent =
+      "Unable to load statistics.";
+  }
+}
 
-});
+
+loadStats();

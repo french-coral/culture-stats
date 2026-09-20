@@ -1,16 +1,23 @@
-import os
 import json
+import os
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
 
 from dotenv import load_dotenv
 from notion_client import Client
 
+
 load_dotenv()
 
-notion = Client(auth=os.environ["NOTION_TOKEN"])
+NOTION_TOKEN = os.getenv("NOTION_TOKEN")
+
+if not NOTION_TOKEN:
+    raise RuntimeError("NOTION_TOKEN is missing")
+
+notion = Client(auth=NOTION_TOKEN)
 
 
+# Keep your existing IDs here.
 DATABASES = {
     "video_games": {
         "name": "Video Games",
@@ -50,6 +57,9 @@ DATABASES = {
 }
 
 
+RATING_VALUES = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+
+
 def get_entries(data_source_id):
     entries = []
     cursor = None
@@ -63,7 +73,7 @@ def get_entries(data_source_id):
 
         entries.extend(response["results"])
 
-        if not response["has_more"]:
+        if not response.get("has_more"):
             break
 
         cursor = response["next_cursor"]
@@ -78,19 +88,17 @@ def get_property_value(page, property_name):
         return None
 
     prop_type = prop["type"]
-    value = prop.get(prop_type)
-
-    if not value:
-        return None
 
     if prop_type == "select":
-        return value.get("name")
+        value = prop["select"]
+        return value["name"] if value else None
 
     if prop_type == "multi_select":
-        return [item["name"] for item in value]
+        values = prop["multi_select"]
+        return [item["name"] for item in values]
 
     if prop_type == "number":
-        return value
+        return prop["number"]
 
     return None
 
@@ -108,7 +116,7 @@ def get_year(page, property_name):
 
     try:
         return int(value)
-    except (ValueError, TypeError):
+    except (TypeError, ValueError):
         return None
 
 
@@ -116,12 +124,9 @@ def parse_rating(value):
     if not value:
         return None
 
-    if isinstance(value, list):
-        if not value:
-            return None
-        value = value[0]
+    value = str(value)
 
-    rating_map = {
+    star_map = {
         "★★★★★": 5,
         "★★★★": 4,
         "★★★": 3,
@@ -134,7 +139,7 @@ def parse_rating(value):
         "☆☆☆☆☆": -5,
     }
 
-    return rating_map.get(value)
+    return star_map.get(value)
 
 
 def get_created_date(page):
@@ -144,81 +149,69 @@ def get_created_date(page):
         return None
 
     try:
-        return datetime.fromisoformat(
-            created_time.replace("Z", "+00:00")
-        )
+        return datetime.fromisoformat(created_time.replace("Z", "+00:00"))
     except ValueError:
         return None
 
 
-def empty_year_stats():
-    return {
-        "total": 0,
-        "active_months": 0,
-        "average_per_active_month": 0,
-    }
+def get_release_year(page, property_name):
+    value = get_property_value(page, property_name)
+
+    if not value:
+        return None
+
+    # Release Date is currently a select in the databases.
+    # We try to extract a 4-digit year from it.
+    value = str(value)
+
+    for part in value.replace("/", "-").replace(".", "-").split("-"):
+        if len(part) == 4 and part.isdigit():
+            return int(part)
+
+    return None
 
 
-all_stats = {
-    "updated_at": datetime.now(timezone.utc).isoformat(),
-    "databases": {},
-}
+def generate_database_stats(config):
+    entries = get_entries(config["id"])
 
+    total = len(entries)
 
-for key, database in DATABASES.items():
-
-    print(f"\nProcessing {database['name']}...")
-
-    entries = get_entries(database["id"])
-
-    yearly = Counter()
-    monthly = defaultdict(Counter)
-
+    years = Counter()
+    year_months = defaultdict(Counter)
     heatmap = Counter()
 
     ratings = Counter()
-
     release_ages = []
 
-    years_seen = set()
+    for rating in RATING_VALUES:
+        ratings[rating] = 0
 
     for page in entries:
-
-        # --------------------------------------------------
-        # Creation date / heatmap
-        # --------------------------------------------------
-
-        created = get_created_date(page)
-
-        if created:
-            date_key = created.date().isoformat()
-            heatmap[date_key] += 1
-
-        # --------------------------------------------------
-        # Consumption year
-        # --------------------------------------------------
-
         consumption_year = get_year(
             page,
-            database["year_property"],
+            config["year_property"],
         )
 
-        if consumption_year:
-            yearly[consumption_year] += 1
+        created_date = get_created_date(page)
 
-            if created:
-                month = created.month
-                monthly[consumption_year][month] += 1
+        # Entries over time / year statistics.
+        if consumption_year is not None:
+            years[consumption_year] += 1
 
-            years_seen.add(consumption_year)
+            # Keep the existing behaviour:
+            # monthly activity is based on the entry's creation month.
+            if created_date and created_date.year == consumption_year:
+                year_months[consumption_year][created_date.month] += 1
 
-        # --------------------------------------------------
-        # Rating
-        # --------------------------------------------------
+        # GitHub-style heatmap.
+        if created_date:
+            date_key = created_date.date().isoformat()
+            heatmap[date_key] += 1
 
+        # Ratings.
         rating_value = get_property_value(
             page,
-            database["rating_property"],
+            config["rating_property"],
         )
 
         rating = parse_rating(rating_value)
@@ -226,174 +219,285 @@ for key, database in DATABASES.items():
         if rating is not None:
             ratings[rating] += 1
 
-        # --------------------------------------------------
-        # Release age
-        # --------------------------------------------------
+        # Release age.
+        if consumption_year is not None:
+            release_year = get_release_year(
+                page,
+                config["release_property"],
+            )
 
-        release_year = get_year(
-            page,
-            database["release_property"],
-        )
-
-        if consumption_year and release_year:
-            age = consumption_year - release_year
-
-            # Ignore impossible negative ages.
-            if age >= 0:
-                release_ages.append(age)
-
-    # ------------------------------------------------------
-    # Year summaries
-    # ------------------------------------------------------
+            if release_year is not None and release_year <= consumption_year:
+                release_ages.append(
+                    consumption_year - release_year
+                )
 
     year_stats = {}
 
-    for year in sorted(years_seen):
+    for year in sorted(years):
+        months = year_months[year]
 
-        month_counts = monthly[year]
+        active_months = sum(
+            1 for count in months.values()
+            if count > 0
+        )
 
-        total = yearly[year]
-        active_months = len(month_counts)
+        year_total = years[year]
 
-        average = (
-            total / active_months
+        average_per_active_month = (
+            year_total / active_months
             if active_months
             else 0
         )
 
         year_stats[str(year)] = {
-            "total": total,
+            "total": year_total,
             "active_months": active_months,
             "average_per_active_month": round(
-                average,
+                average_per_active_month,
                 2,
             ),
             "months": {
                 str(month): count
-                for month, count in sorted(
-                    month_counts.items()
-                )
+                for month, count in sorted(months.items())
             },
         }
 
-    # ------------------------------------------------------
-    # Rating distribution
-    # ------------------------------------------------------
-
-    rating_distribution = {
-        str(rating): ratings.get(rating, 0)
-        for rating in range(5, -6, -1)
-        if rating != 0
-    }
-
     rated_total = sum(ratings.values())
 
-    average_rating = (
-        sum(
-            rating * count
-            for rating, count in ratings.items()
+    rating_average = None
+
+    if rated_total:
+        rating_average = round(
+            sum(
+                rating * count
+                for rating, count in ratings.items()
+            ) / rated_total,
+            2,
         )
-        / rated_total
-        if rated_total
-        else None
-    )
 
-    # ------------------------------------------------------
-    # Release age
-    # ------------------------------------------------------
+    release_age_average = None
 
-    average_release_age = (
-        sum(release_ages) / len(release_ages)
-        if release_ages
-        else None
-    )
+    if release_ages:
+        release_age_average = round(
+            sum(release_ages) / len(release_ages),
+            2,
+        )
 
-    # ------------------------------------------------------
-    # Final database object
-    # ------------------------------------------------------
-
-    all_stats["databases"][key] = {
-        "name": database["name"],
-
-        "total": len(entries),
+    return {
+        "name": config["name"],
+        "total": total,
 
         "years": {
             str(year): count
-            for year, count in sorted(
-                yearly.items()
-            )
+            for year, count in sorted(years.items())
         },
 
         "year_stats": year_stats,
 
         "heatmap": {
             date: count
-            for date, count in sorted(
-                heatmap.items()
-            )
+            for date, count in sorted(heatmap.items())
         },
 
         "ratings": {
-            "distribution": rating_distribution,
+            "distribution": {
+                str(rating): ratings[rating]
+                for rating in RATING_VALUES
+            },
             "rated_total": rated_total,
-            "average": (
-                round(average_rating, 2)
-                if average_rating is not None
-                else None
-            ),
+            "average": rating_average,
         },
 
         "release_age": {
-            "average": (
-                round(average_release_age, 2)
-                if average_release_age is not None
-                else None
-            ),
-            "entries_with_data": len(
-                release_ages
-            ),
+            "average": release_age_average,
+            "entries_with_data": len(release_ages),
         },
     }
 
-    print(
-        f"  Total entries: {len(entries)}"
-    )
 
-    print(
-        f"  Years: {sorted(years_seen)}"
-    )
+def combine_all_stats(database_stats):
+    """
+    Build the aggregate "All" view by combining the five databases.
+    """
 
-    print(
-        f"  Rated entries: {rated_total}"
-    )
+    total = 0
 
-    print(
-        f"  Average rating: "
-        f"{average_rating:.2f}"
-        if average_rating is not None
-        else "  Average rating: N/A"
-    )
+    years = Counter()
+    year_months = defaultdict(Counter)
+    heatmap = Counter()
 
-    print(
-        f"  Average release age: "
-        f"{average_release_age:.2f} years"
-        if average_release_age is not None
-        else "  Average release age: N/A"
-    )
+    ratings = Counter()
+
+    release_age_weighted_sum = 0
+    release_age_entries = 0
+
+    breakdown = {}
+
+    for key, stats in database_stats.items():
+
+        db_total = stats["total"]
+
+        total += db_total
+        breakdown[key] = db_total
+
+        # Years.
+        for year, count in stats["years"].items():
+            years[int(year)] += count
+
+        # Monthly statistics.
+        for year, year_data in stats["year_stats"].items():
+            for month, count in year_data["months"].items():
+                year_months[int(year)][int(month)] += count
+
+        # Heatmap.
+        for date, count in stats["heatmap"].items():
+            heatmap[date] += count
+
+        # Ratings.
+        for rating, count in stats["ratings"]["distribution"].items():
+            ratings[int(rating)] += count
+
+        # Release age weighted average.
+        entries_with_data = stats["release_age"]["entries_with_data"]
+        average = stats["release_age"]["average"]
+
+        if average is not None and entries_with_data:
+            release_age_weighted_sum += average * entries_with_data
+            release_age_entries += entries_with_data
+
+    # Combined year statistics.
+    year_stats = {}
+
+    for year in sorted(years):
+        months = year_months[year]
+
+        active_months = sum(
+            1 for count in months.values()
+            if count > 0
+        )
+
+        year_total = years[year]
+
+        average_per_active_month = (
+            year_total / active_months
+            if active_months
+            else 0
+        )
+
+        year_stats[str(year)] = {
+            "total": year_total,
+            "active_months": active_months,
+            "average_per_active_month": round(
+                average_per_active_month,
+                2,
+            ),
+            "months": {
+                str(month): count
+                for month, count in sorted(months.items())
+            },
+        }
+
+    # Combined rating statistics.
+    rated_total = sum(ratings.values())
+
+    rating_average = None
+
+    if rated_total:
+        rating_average = round(
+            sum(
+                rating * count
+                for rating, count in ratings.items()
+            ) / rated_total,
+            2,
+        )
+
+    # Combined release age.
+    release_age_average = None
+
+    if release_age_entries:
+        release_age_average = round(
+            release_age_weighted_sum / release_age_entries,
+            2,
+        )
+
+    return {
+        "name": "All",
+        "total": total,
+
+        "years": {
+            str(year): count
+            for year, count in sorted(years.items())
+        },
+
+        "year_stats": year_stats,
+
+        "heatmap": {
+            date: count
+            for date, count in sorted(heatmap.items())
+        },
+
+        "ratings": {
+            "distribution": {
+                str(rating): ratings[rating]
+                for rating in RATING_VALUES
+            },
+            "rated_total": rated_total,
+            "average": rating_average,
+        },
+
+        "release_age": {
+            "average": release_age_average,
+            "entries_with_data": release_age_entries,
+        },
+
+        # Used by the frontend to create the pastel donut.
+        "breakdown": breakdown,
+    }
 
 
-with open(
-    "stats.json",
-    "w",
-    encoding="utf-8",
-) as file:
+def main():
+    database_stats = {}
 
-    json.dump(
-        all_stats,
-        file,
-        indent=2,
-        ensure_ascii=False,
-    )
+    for key, config in DATABASES.items():
+        print(f"Generating statistics for {config['name']}...")
+
+        database_stats[key] = generate_database_stats(config)
+
+        print(
+            f"  → {database_stats[key]['total']} entries"
+        )
+
+    all_stats = combine_all_stats(database_stats)
+
+    # Put "all" first so it becomes the default dashboard view.
+    output_databases = {
+        "all": all_stats,
+        **database_stats,
+    }
+
+    output = {
+        "updated_at": datetime.utcnow().isoformat() + "Z",
+        "databases": output_databases,
+    }
+
+    with open("stats.json", "w", encoding="utf-8") as file:
+        json.dump(
+            output,
+            file,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+    print()
+    print(f"Total entries: {all_stats['total']}")
+    print("Breakdown:")
+
+    for key, count in all_stats["breakdown"].items():
+        print(f"  {key}: {count}")
+
+    print()
+    print("stats.json updated successfully.")
 
 
-print("\nGenerated stats.json")
+if __name__ == "__main__":
+    main()

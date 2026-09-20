@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-        >
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>Culture Stats</title>
+    <title>Culture Stats</title>
 
-        <link
-            rel="stylesheet"
-            href="style.css"
-        >
+    <link rel="stylesheet" href="style.css">
     </head>
 
     <body>
@@ -20,210 +14,186 @@
         <main class="dashboard">
 
             <header class="dashboard-header">
-                <div>
-                    <h1>Culture Stats</h1>
-                    <p id="updated">Loading...</p>
-                </div>
+            <div>
+                <h1>Culture Stats</h1>
+                <p id="updated">Loading…</p>
+            </div>
 
-                <button
-                    id="theme-toggle"
-                    class="icon-button"
-                    type="button"
-                    aria-label="Toggle theme"
-                    title="Toggle theme"
-                >
-                    ◐
-                </button>
+            <button id="theme-toggle" class="theme-toggle" type="button">
+                ◐
+            </button>
             </header>
 
 
-            <!-- DATABASE SELECTOR -->
+            <!-- DATABASE FILTER -->
 
-            <section class="controls">
-                <label for="database-select">
-                    Database
-                </label>
+            <section class="controls card">
+            <label for="database-select">
+                Database
+            </label>
 
-                <select id="database-select"></select>
+            <select id="database-select"></select>
             </section>
 
 
             <!-- TOTAL -->
 
-            <section class="section">
-                <div class="section-header">
-                    <div>
-                        <h2>Total entries</h2>
-                        <p>Everything currently in this database</p>
+            <section class="card total-card">
+
+            <div class="section-heading">
+                <div>
+                <h2>Total entries</h2>
+                <p>Everything currently tracked</p>
+                </div>
+            </div>
+
+            <div class="total-layout">
+
+                <div class="donut-wrap">
+                <div id="donut" class="donut">
+                    <div class="donut-center">
+                    <strong id="total-number">0</strong>
+                    <span>entries</span>
                     </div>
+                </div>
                 </div>
 
-                <div class="total-card">
-                    <div class="donut">
-                        <div class="donut-value">
-                            <strong id="total-value">0</strong>
-                            <span>entries</span>
-                        </div>
-                    </div>
-                </div>
+                <div id="database-legend" class="database-legend"></div>
+
+            </div>
+
             </section>
 
 
             <!-- ENTRIES OVER TIME -->
 
-            <section class="section">
+            <section class="card">
 
-                <div class="section-header">
-                    <div>
-                        <h2>Entries over time</h2>
-                        <p>Based on the year you recorded for each entry</p>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="range-start">
-                            From
-                        </label>
-
-                        <select id="range-start"></select>
-
-                        <label for="range-end">
-                            To
-                        </label>
-
-                        <select id="range-end"></select>
-                    </div>
+            <div class="section-heading">
+                <div>
+                <h2>Entries over time</h2>
+                <p>Number of entries added each year</p>
                 </div>
 
-                <div class="chart-card">
-                    <div
-                        id="year-chart"
-                        class="year-chart"
-                    ></div>
+                <div class="range-controls">
+
+                <label>
+                    From
+                    <select id="year-from"></select>
+                </label>
+
+                <label>
+                    To
+                    <select id="year-to"></select>
+                </label>
+
                 </div>
+            </div>
+
+            <div id="year-chart" class="year-chart"></div>
 
             </section>
 
 
             <!-- YEAR SUMMARY -->
 
-            <section class="section">
+            <section class="card">
 
-                <div class="section-header">
-                    <div>
-                        <h2>Year summary</h2>
-                        <p id="summary-year-label"></p>
-                    </div>
+            <div class="section-heading">
 
-                    <select id="summary-year"></select>
+                <div>
+                <h2>Year summary</h2>
+                <p>Activity during a selected year</p>
                 </div>
 
-                <div class="summary-grid">
+                <select id="summary-year"></select>
 
-                    <div class="metric-card">
-                        <span>Total entries</span>
-                        <strong id="summary-total">0</strong>
-                    </div>
+            </div>
 
-                    <div class="metric-card">
-                        <span>Active months</span>
-                        <strong id="summary-months">0</strong>
-                    </div>
+            <div class="summary-grid">
 
-                    <div class="metric-card">
-                        <span>Average / active month</span>
-                        <strong id="summary-average">0</strong>
-                    </div>
-
+                <div class="summary-stat">
+                <span>Total</span>
+                <strong id="summary-total">—</strong>
                 </div>
+
+                <div class="summary-stat">
+                <span>Active months</span>
+                <strong id="summary-months">—</strong>
+                </div>
+
+                <div class="summary-stat">
+                <span>Average / active month</span>
+                <strong id="summary-average">—</strong>
+                </div>
+
+            </div>
 
             </section>
 
 
-            <!-- RATING -->
+            <!-- RATINGS -->
 
-            <section class="section">
+            <section class="card">
 
-                <div class="section-header">
-                    <div>
-                        <h2>Rating distribution</h2>
-                        <p id="rating-average">Average rating: —</p>
-                    </div>
+            <div class="section-heading">
+                <div>
+                <h2>Ratings</h2>
+                <p id="rating-average">Average: —</p>
                 </div>
+            </div>
 
-                <div class="chart-card">
-
-                    <div
-                        id="rating-chart"
-                        class="rating-chart"
-                    ></div>
-
-                </div>
+            <div id="rating-chart" class="rating-chart"></div>
 
             </section>
 
 
             <!-- RELEASE AGE -->
 
-            <section class="section">
+            <section class="card">
 
-                <div class="section-header">
-                    <div>
-                        <h2>Average release age</h2>
-                        <p>
-                            Difference between release year and recorded year
-                        </p>
-                    </div>
+            <div class="section-heading">
+                <div>
+                <h2>Release age</h2>
+                <p>Average gap between release and consumption</p>
                 </div>
+            </div>
 
-                <div class="metric-card release-age-card">
+            <div class="release-age">
+                <strong id="release-age-value">—</strong>
+                <span>years</span>
+            </div>
 
-                    <strong id="release-age">
-                        —
-                    </strong>
-
-                    <span>
-                        years old on average
-                    </span>
-
-                    <small id="release-age-coverage"></small>
-
-                </div>
+            <p id="release-age-count" class="muted"></p>
 
             </section>
 
 
             <!-- HEATMAP -->
 
-            <section class="section">
+            <section class="card">
 
-                <div class="section-header">
+            <div class="section-heading">
 
-                    <div>
-                        <h2>Added to your database</h2>
-                        <p>
-                            Each square represents one day
-                        </p>
-                    </div>
-
-                    <select id="heatmap-year"></select>
-
+                <div>
+                <h2>Activity heatmap</h2>
+                <p>Entries added to your databases</p>
                 </div>
 
-                <div class="heatmap-card">
+                <select id="heatmap-year"></select>
 
-                    <div
-                        id="heatmap"
-                        class="heatmap"
-                    ></div>
+            </div>
 
-                </div>
+            <div id="heatmap" class="heatmap"></div>
 
             </section>
 
-
         </main>
 
-    <script src="app.js"></script>
+
+        <div id="tooltip" class="tooltip"></div>
+
+        <script src="app.js"></script>
 
     </body>
 </html>
