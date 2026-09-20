@@ -11,6 +11,7 @@
 
 <main class="dashboard">
 
+  <!-- Header -->
   <header class="dashboard-header">
     <div>
       <h1>Culture Stats</h1>
@@ -23,45 +24,63 @@
   </header>
 
 
-  <!-- DATABASE -->
-
+  <!-- Database selector -->
   <section class="controls card">
     <label for="database-select">Database</label>
-    <select id="database-select"></select>
+
+    <select id="database-select">
+      <option value="all">All</option>
+    </select>
   </section>
 
 
-  <!-- TOTAL -->
+  <!-- Total + Year Summary -->
+  <section class="stats-row">
 
-  <section class="card total-card">
+    <!-- Total Entries -->
+    <div class="card total-card">
 
-    <div class="section-heading">
-      <div>
-        <h2>Total entries</h2>
-        <p>Everything currently tracked</p>
-      </div>
-    </div>
-
-    <div class="total-layout">
-
-      <div class="donut-wrap">
-        <div id="donut" class="donut">
-          <div class="donut-center">
-            <strong id="total-number">0</strong>
-            <span>entries</span>
-          </div>
+      <div class="section-heading">
+        <div>
+          <h2>Total Entries</h2>
+          <p id="total-description">All databases</p>
         </div>
       </div>
 
-      <div id="database-legend" class="database-legend"></div>
+      <div class="total-content">
+
+        <div id="total-donut" class="donut"></div>
+
+        <div class="total-number">
+          <strong id="total-value">—</strong>
+          <span>entries</span>
+        </div>
+
+      </div>
+
+      <div id="database-breakdown" class="database-breakdown"></div>
+
+    </div>
+
+
+    <!-- Year Summary -->
+    <div class="card year-summary-card">
+
+      <div class="section-heading">
+        <div>
+          <h2>Year Summary</h2>
+          <p>Entries by consumption year</p>
+        </div>
+      </div>
+
+      <div id="year-summary" class="year-summary"></div>
 
     </div>
 
   </section>
 
 
-  <!-- ENTRIES / HEATMAP -->
-
+  <!-- Activity -->
   <section class="card activity-card">
 
     <div class="section-heading">
@@ -94,7 +113,6 @@
         </div>
 
         <div class="range-controls">
-
           <label>
             From
             <select id="year-from"></select>
@@ -104,7 +122,6 @@
             To
             <select id="year-to"></select>
           </label>
-
         </div>
 
       </div>
@@ -112,6 +129,7 @@
     </div>
 
 
+    <!-- Heatmap -->
     <div id="heatmap-view" class="activity-view active">
 
       <div class="heatmap-year-control">
@@ -123,6 +141,7 @@
     </div>
 
 
+    <!-- Curve -->
     <div id="curve-view" class="activity-view">
 
       <div id="year-chart" class="year-chart"></div>
@@ -132,77 +151,55 @@
   </section>
 
 
-  <!-- YEAR SUMMARY + RELEASE AGE -->
+  <!-- Release Age -->
+  <section class="card release-age-card">
 
-  <section class="stats-row">
-
-    <div class="card year-summary-card">
-
-      <div class="section-heading">
-
-        <div>
-          <h2>Year summary</h2>
-          <p>Activity during a selected year</p>
-        </div>
-
-        <select id="summary-year"></select>
-
+    <div class="section-heading">
+      <div>
+        <h2>Release Age</h2>
+        <p>Release → consumption</p>
       </div>
-
-      <div class="summary-grid">
-
-        <div class="summary-stat">
-          <span>Total</span>
-          <strong id="summary-total">—</strong>
-        </div>
-
-        <div class="summary-stat">
-          <span>Active months</span>
-          <strong id="summary-months">—</strong>
-        </div>
-
-        <div class="summary-stat">
-          <span>Average / active month</span>
-          <strong id="summary-average">—</strong>
-        </div>
-
-      </div>
-
     </div>
 
+    <div class="release-age-grid">
 
-    <div class="card release-age-card">
-
-      <div class="section-heading">
-        <div>
-          <h2>Release age</h2>
-          <p>Release → consumption</p>
-        </div>
-      </div>
-
-      <div class="release-age">
+      <div class="release-age-stat">
         <strong id="release-age-value">—</strong>
-        <span>years</span>
+        <span>years average age</span>
       </div>
 
-      <p id="release-age-count" class="muted"></p>
+      <div class="release-year-stat">
+        <strong id="release-year-value">—</strong>
+        <span>average release year</span>
+      </div>
 
     </div>
+
+    <p id="release-age-count" class="muted"></p>
 
   </section>
 
 
-  <!-- RATINGS -->
-
-  <section class="card">
+  <!-- Ratings -->
+  <section class="card ratings-card">
 
     <div class="section-heading">
-
       <div>
         <h2>Ratings</h2>
-        <p id="rating-average">Average: —</p>
+        <p>Distribution from −5 to +5</p>
+      </div>
+    </div>
+
+    <div class="rating-summary">
+      <div>
+        <strong id="rating-average">—</strong>
+        <span>average</span>
       </div>
 
+      <div>
+        <strong id="rating-total">—</strong>
+        <span>rated</span>
+      </div>
     </div>
 
     <div id="rating-chart" class="rating-chart"></div>
@@ -213,6 +210,7 @@
 
 
 <div id="tooltip" class="tooltip"></div>
+
 
 <script src="app.js"></script>
 
