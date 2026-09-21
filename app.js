@@ -27,14 +27,14 @@ const curveView = document.getElementById("curve-view");
 const activityDescription =
   document.getElementById("activity-description");
 
-const releaseAgeValue =
-  document.getElementById("release-age-value");
+//const releaseAgeValue =
+//  document.getElementById("release-age-value");
 
 const releaseYearValue =
   document.getElementById("release-year-value");
 
-const releaseAgeCount =
-  document.getElementById("release-age-count");
+// const releaseAgeCount =
+//   document.getElementById("release-age-count");
 
 const ratingAverage =
   document.getElementById("rating-average");
@@ -896,52 +896,417 @@ function renderYearChart() {
     return;
   }
 
-  const values = years.map(year => ({
-    year,
-    value: data.years?.[year] || 0
-  }));
+  // Use the selected year if available,
+  // otherwise default to the latest year.
+  const selectedYear =
+    Number(
+      heatmapYear?.value ||
+      years[years.length - 1]
+    );
+
+  const yearData =
+    data.year_stats?.[selectedYear];
+
+  if (!yearData) {
+    yearChart.textContent =
+      `No data available for ${selectedYear}.`;
+    return;
+  }
+
+  // ---------------------------------
+  // Monthly data
+  // ---------------------------------
+
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+
+  const values = monthNames.map(
+    (month, index) => ({
+      month,
+      value:
+        yearData.months?.[String(index + 1)] || 0
+    })
+  );
 
   const maxValue = Math.max(
     1,
     ...values.map(item => item.value)
   );
 
-  const chart = document.createElement("div");
-  chart.className = "year-chart-bars";
+  // ---------------------------------
+  // Chart container
+  // ---------------------------------
 
-  values.forEach(item => {
+  const chart =
+    document.createElement("div");
 
-    const row = document.createElement("div");
-    row.className = "year-chart-row";
+  chart.className =
+    "curve-chart";
 
-    const label = document.createElement("span");
-    label.className = "year-chart-label";
-    label.textContent = item.year;
+  // ---------------------------------
+  // SVG
+  // ---------------------------------
 
-    const barTrack = document.createElement("div");
-    barTrack.className = "year-chart-track";
+  const width = 900;
+  const height = 260;
 
-    const bar = document.createElement("div");
-    bar.className = "year-chart-bar";
+  const paddingLeft = 42;
+  const paddingRight = 18;
+  const paddingTop = 20;
+  const paddingBottom = 34;
 
-    const width =
-      (item.value / maxValue) * 100;
+  const chartWidth =
+    width -
+    paddingLeft -
+    paddingRight;
 
-    bar.style.width = `${width}%`;
+  const chartHeight =
+    height -
+    paddingTop -
+    paddingBottom;
 
-    const value = document.createElement("span");
-    value.className = "year-chart-value";
-    value.textContent =
-      formatNumber(item.value);
+  const svg =
+    document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
 
-    barTrack.appendChild(bar);
+  svg.setAttribute(
+    "viewBox",
+    `0 0 ${width} ${height}`
+  );
 
-    row.appendChild(label);
-    row.appendChild(barTrack);
-    row.appendChild(value);
+  svg.setAttribute(
+    "preserveAspectRatio",
+    "none"
+  );
 
-    chart.appendChild(row);
+  svg.classList.add(
+    "curve-chart-svg"
+  );
+
+  // ---------------------------------
+  // Grid lines
+  // ---------------------------------
+
+  const gridCount = 4;
+
+  for (let i = 0; i <= gridCount; i++) {
+
+    const y =
+      paddingTop +
+      chartHeight -
+      (i / gridCount) *
+        chartHeight;
+
+    const line =
+      document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line"
+      );
+
+    line.setAttribute(
+      "x1",
+      paddingLeft
+    );
+
+    line.setAttribute(
+      "x2",
+      width - paddingRight
+    );
+
+    line.setAttribute(
+      "y1",
+      y
+    );
+
+    line.setAttribute(
+      "y2",
+      y
+    );
+
+    line.classList.add(
+      "curve-grid-line"
+    );
+
+    svg.appendChild(line);
+
+    // Y-axis label
+    const label =
+      document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "text"
+      );
+
+    const value =
+      Math.round(
+        (maxValue / gridCount) * i
+      );
+
+    label.setAttribute(
+      "x",
+      paddingLeft - 8
+    );
+
+    label.setAttribute(
+      "y",
+      y + 4
+    );
+
+    label.setAttribute(
+      "text-anchor",
+      "end"
+    );
+
+    label.classList.add(
+      "curve-axis-label"
+    );
+
+    label.textContent =
+      formatNumber(value);
+
+    svg.appendChild(label);
+  }
+
+  // ---------------------------------
+  // Calculate points
+  // ---------------------------------
+
+  const points =
+    values.map((item, index) => {
+
+      const x =
+        paddingLeft +
+        (index /
+          (values.length - 1)) *
+          chartWidth;
+
+      const y =
+        paddingTop +
+        chartHeight -
+        (item.value / maxValue) *
+          chartHeight;
+
+      return {
+        x,
+        y,
+        value: item.value,
+        month: item.month
+      };
+    });
+
+  // ---------------------------------
+  // Filled area
+  // ---------------------------------
+
+  const areaPath =
+    document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+
+  const areaStart =
+    `M ${points[0].x} ${
+      paddingTop + chartHeight
+    }`;
+
+  const areaLine =
+    points
+      .map(
+        point =>
+          `L ${point.x} ${point.y}`
+      )
+      .join(" ");
+
+  const areaEnd =
+    `L ${
+      points[points.length - 1].x
+    } ${
+      paddingTop + chartHeight
+    } Z`;
+
+  areaPath.setAttribute(
+    "d",
+    `${areaStart} ${areaLine} ${areaEnd}`
+  );
+
+  areaPath.classList.add(
+    "curve-area"
+  );
+
+  svg.appendChild(areaPath);
+
+  // ---------------------------------
+  // Smooth curve
+  // ---------------------------------
+
+  let pathData =
+    `M ${points[0].x} ${points[0].y}`;
+
+  for (let i = 1; i < points.length; i++) {
+
+    const previous =
+      points[i - 1];
+
+    const current =
+      points[i];
+
+    const midpointX =
+      (previous.x + current.x) / 2;
+
+    pathData +=
+      ` C ${midpointX} ${previous.y},
+           ${midpointX} ${current.y},
+           ${current.x} ${current.y}`;
+  }
+
+  const path =
+    document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+
+  path.setAttribute(
+    "d",
+    pathData
+  );
+
+  path.classList.add(
+    "curve-line"
+  );
+
+  svg.appendChild(path);
+
+  // ---------------------------------
+  // Points + tooltips
+  // ---------------------------------
+
+  points.forEach(point => {
+
+    const circle =
+      document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      );
+
+    circle.setAttribute(
+      "cx",
+      point.x
+    );
+
+    circle.setAttribute(
+      "cy",
+      point.y
+    );
+
+    circle.setAttribute(
+      "r",
+      4
+    );
+
+    circle.classList.add(
+      "curve-point"
+    );
+
+    circle.addEventListener(
+      "mouseenter",
+      event => {
+
+        tooltip.textContent =
+          `${point.month}: ${formatNumber(point.value)}`;
+
+        tooltip.classList.add(
+          "visible"
+        );
+
+        const rect =
+          chart.getBoundingClientRect();
+
+        tooltip.style.left =
+          `${event.clientX - rect.left + 10}px`;
+
+        tooltip.style.top =
+          `${event.clientY - rect.top - 32}px`;
+      }
+    );
+
+    circle.addEventListener(
+      "mousemove",
+      event => {
+
+        const rect =
+          chart.getBoundingClientRect();
+
+        tooltip.style.left =
+          `${event.clientX - rect.left + 10}px`;
+
+        tooltip.style.top =
+          `${event.clientY - rect.top - 32}px`;
+      }
+    );
+
+    circle.addEventListener(
+      "mouseleave",
+      () => {
+        tooltip.classList.remove(
+          "visible"
+        );
+      }
+    );
+
+    svg.appendChild(circle);
   });
+
+  // ---------------------------------
+  // Month labels
+  // ---------------------------------
+
+  points.forEach(point => {
+
+    const label =
+      document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "text"
+      );
+
+    label.setAttribute(
+      "x",
+      point.x
+    );
+
+    label.setAttribute(
+      "y",
+      height - 10
+    );
+
+    label.setAttribute(
+      "text-anchor",
+      "middle"
+    );
+
+    label.classList.add(
+      "curve-month-label"
+    );
+
+    label.textContent =
+      point.month;
+
+    svg.appendChild(label);
+  });
+
+  chart.appendChild(svg);
 
   yearChart.appendChild(chart);
 }
@@ -950,44 +1315,44 @@ function renderYearChart() {
    Release Age
 -------------------------------------------------- */
 
-function renderReleaseAge() {
+// function renderReleaseAge() {
 
-  const data =
-    getCurrentData();
+//   const data =
+//     getCurrentData();
 
-  const releaseAge =
-    data.release_age || {};
+//   const releaseAge =
+//     data.release_age || {};
 
-  releaseAgeValue.textContent =
-    releaseAge.average != null
-      ? Number(
-          releaseAge.average
-        ).toFixed(1)
-      : "—";
-
-
-  /*
-   * This will start displaying automatically
-   * once generate_stats.py adds:
-   *
-   * average_release_year
-   */
-
-  releaseYearValue.textContent =
-    releaseAge.average_release_year != null
-      ? Number(
-          releaseAge.average_release_year
-        ).toFixed(1)
-      : "—";
+//   releaseAgeValue.textContent =
+//     releaseAge.average != null
+//       ? Number(
+//           releaseAge.average
+//         ).toFixed(1)
+//       : "—";
 
 
-  releaseAgeCount.textContent =
-    releaseAge.entries_with_data
-      ? `${formatNumber(
-          releaseAge.entries_with_data
-        )} entries with release data`
-      : "";
-}
+//   /*
+//    * This will start displaying automatically
+//    * once generate_stats.py adds:
+//    *
+//    * average_release_year
+//    */
+
+//   releaseYearValue.textContent =
+//     releaseAge.average_release_year != null
+//       ? Number(
+//           releaseAge.average_release_year
+//         ).toFixed(1)
+//       : "—";
+
+
+//   releaseAgeCount.textContent =
+//     releaseAge.entries_with_data
+//       ? `${formatNumber(
+//           releaseAge.entries_with_data
+//         )} entries with release data`
+//       : "";
+// }
 
 
 /* --------------------------------------------------
@@ -1113,7 +1478,7 @@ function renderDashboard() {
 
   setupYearSelectors();
 
-  renderReleaseAge();
+  // renderReleaseAge();
 
   renderRatings();
 
