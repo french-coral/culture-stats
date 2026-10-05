@@ -1,17 +1,17 @@
 {
-  "updated_at": "2026-10-04T10:25:51.266423Z",
+  "updated_at": "2026-10-05T11:12:59.633258Z",
   "databases": {
     "all": {
       "name": "All",
-      "total": 24,
+      "total": 26,
       "years": {
         "2009": 1,
         "2021": 1,
-        "2022": 1,
+        "2022": 2,
         "2023": 3,
         "2024": 2,
         "2025": 4,
-        "2026": 12
+        "2026": 13
       },
       "year_stats": {
         "2009": {
@@ -27,7 +27,7 @@
           "months": {}
         },
         "2022": {
-          "total": 1,
+          "total": 2,
           "active_months": 0,
           "average_per_active_month": 0,
           "months": {}
@@ -51,12 +51,12 @@
           "months": {}
         },
         "2026": {
-          "total": 12,
+          "total": 13,
           "active_months": 2,
-          "average_per_active_month": 6.0,
+          "average_per_active_month": 6.5,
           "months": {
             "9": 11,
-            "10": 1
+            "10": 2
           }
         }
       },
@@ -74,7 +74,8 @@
         "2026-09-27": 1,
         "2026-09-29": 2,
         "2026-09-30": 1,
-        "2026-10-02": 1
+        "2026-10-02": 1,
+        "2026-10-04": 2
       },
       "ratings": {
         "distribution": {
@@ -83,35 +84,35 @@
           "-3": 0,
           "-2": 0,
           "-1": 1,
-          "1": 0,
+          "1": 1,
           "2": 1,
           "3": 7,
-          "4": 6,
+          "4": 7,
           "5": 8
         },
-        "rated_total": 23,
-        "average": 3.74
+        "rated_total": 25,
+        "average": 3.64
       },
       "release_age": {
-        "average": 12.22,
-        "average_release_year": 2011.9,
-        "entries_with_data": 23,
-        "release_year_entries_with_data": 23
+        "average": 11.35,
+        "average_release_year": 2012.8,
+        "entries_with_data": 26,
+        "release_year_entries_with_data": 26
       },
       "breakdown": {
-        "video_games": 12,
+        "video_games": 13,
         "games": 2,
         "reads": 1,
-        "multimedia": 7,
+        "multimedia": 8,
         "music": 2
       }
     },
     "video_games": {
       "name": "Video Games",
-      "total": 12,
+      "total": 13,
       "years": {
         "2021": 1,
-        "2022": 1,
+        "2022": 2,
         "2023": 2,
         "2024": 2,
         "2025": 3,
@@ -125,7 +126,7 @@
           "months": {}
         },
         "2022": {
-          "total": 1,
+          "total": 2,
           "active_months": 0,
           "average_per_active_month": 0,
           "months": {}
@@ -163,7 +164,8 @@
         "2026-09-23": 1,
         "2026-09-26": 1,
         "2026-09-29": 2,
-        "2026-09-30": 1
+        "2026-09-30": 1,
+        "2026-10-04": 1
       },
       "ratings": {
         "distribution": {
@@ -172,20 +174,20 @@
           "-3": 0,
           "-2": 0,
           "-1": 1,
-          "1": 0,
+          "1": 1,
           "2": 0,
           "3": 4,
           "4": 3,
           "5": 4
         },
-        "rated_total": 12,
-        "average": 3.58
+        "rated_total": 13,
+        "average": 3.38
       },
       "release_age": {
-        "average": 6.75,
-        "average_release_year": 2017.4,
-        "entries_with_data": 12,
-        "release_year_entries_with_data": 12
+        "average": 6.31,
+        "average_release_year": 2017.7,
+        "entries_with_data": 13,
+        "release_year_entries_with_data": 13
       }
     },
     "games": {
@@ -280,18 +282,18 @@
     },
     "multimedia": {
       "name": "Multimedia",
-      "total": 7,
+      "total": 8,
       "years": {
-        "2026": 7
+        "2026": 8
       },
       "year_stats": {
         "2026": {
-          "total": 7,
+          "total": 8,
           "active_months": 2,
-          "average_per_active_month": 3.5,
+          "average_per_active_month": 4.0,
           "months": {
             "9": 6,
-            "10": 1
+            "10": 2
           }
         }
       },
@@ -302,7 +304,8 @@
         "2026-09-21": 1,
         "2026-09-26": 1,
         "2026-09-27": 1,
-        "2026-10-02": 1
+        "2026-10-02": 1,
+        "2026-10-04": 1
       },
       "ratings": {
         "distribution": {
@@ -314,17 +317,17 @@
           "1": 0,
           "2": 1,
           "3": 2,
-          "4": 2,
+          "4": 3,
           "5": 1
         },
-        "rated_total": 6,
-        "average": 3.5
+        "rated_total": 7,
+        "average": 3.57
       },
       "release_age": {
-        "average": 10.83,
-        "average_release_year": 2015.2,
-        "entries_with_data": 6,
-        "release_year_entries_with_data": 6
+        "average": 9.75,
+        "average_release_year": 2016.2,
+        "entries_with_data": 8,
+        "release_year_entries_with_data": 8
       }
     },
     "music": {
