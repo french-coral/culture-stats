@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-10-21T09:09:35.076898Z",
+  "updated_at": "2026-10-22T09:11:47.568437Z",
   "databases": {
     "all": {
       "name": "All",
-      "total": 35,
+      "total": 36,
       "years": {
         "2009": 1,
         "2019": 1,
@@ -12,7 +12,7 @@
         "2023": 3,
         "2024": 2,
         "2025": 5,
-        "2026": 17
+        "2026": 18
       },
       "year_stats": {
         "2009": {
@@ -58,12 +58,12 @@
           "months": {}
         },
         "2026": {
-          "total": 17,
+          "total": 18,
           "active_months": 2,
-          "average_per_active_month": 8.5,
+          "average_per_active_month": 9.0,
           "months": {
             "9": 11,
-            "10": 6
+            "10": 7
           }
         }
       },
@@ -89,7 +89,8 @@
         "2026-10-13": 1,
         "2026-10-17": 1,
         "2026-10-18": 3,
-        "2026-10-19": 1
+        "2026-10-19": 1,
+        "2026-10-21": 1
       },
       "ratings": {
         "distribution": {
@@ -101,11 +102,11 @@
           "1": 2,
           "2": 1,
           "3": 11,
-          "4": 11,
+          "4": 12,
           "5": 8
         },
-        "rated_total": 35,
-        "average": 3.37
+        "rated_total": 36,
+        "average": 3.39
       },
       "release_age": {
         "average": 12.38,
@@ -117,7 +118,7 @@
         "video_games": 15,
         "games": 2,
         "reads": 3,
-        "multimedia": 13,
+        "multimedia": 14,
         "music": 2
       }
     },
@@ -313,10 +314,10 @@
     },
     "multimedia": {
       "name": "Multimedia",
-      "total": 13,
+      "total": 14,
       "years": {
         "2025": 1,
-        "2026": 12
+        "2026": 13
       },
       "year_stats": {
         "2025": {
@@ -326,12 +327,12 @@
           "months": {}
         },
         "2026": {
-          "total": 12,
+          "total": 13,
           "active_months": 2,
-          "average_per_active_month": 6.0,
+          "average_per_active_month": 6.5,
           "months": {
             "9": 6,
-            "10": 6
+            "10": 7
           }
         }
       },
@@ -348,7 +349,8 @@
         "2026-10-11": 1,
         "2026-10-17": 1,
         "2026-10-18": 1,
-        "2026-10-19": 1
+        "2026-10-19": 1,
+        "2026-10-21": 1
       },
       "ratings": {
         "distribution": {
@@ -360,11 +362,11 @@
           "1": 1,
           "2": 1,
           "3": 4,
-          "4": 5,
+          "4": 6,
           "5": 1
         },
-        "rated_total": 13,
-        "average": 2.92
+        "rated_total": 14,
+        "average": 3.0
       },
       "release_age": {
         "average": 14.75,
