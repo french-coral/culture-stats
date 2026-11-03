@@ -1,18 +1,19 @@
 {
-  "updated_at": "2026-11-02T12:02:07.057010Z",
+  "updated_at": "2026-11-03T11:39:39.636929Z",
   "databases": {
     "all": {
       "name": "All",
-      "total": 43,
+      "total": 48,
       "years": {
         "2009": 1,
         "2019": 1,
+        "2020": 1,
         "2021": 4,
-        "2022": 2,
-        "2023": 6,
-        "2024": 4,
+        "2022": 3,
+        "2023": 8,
+        "2024": 5,
         "2025": 5,
-        "2026": 19
+        "2026": 20
       },
       "year_stats": {
         "2009": {
@@ -27,6 +28,12 @@
           "average_per_active_month": 0,
           "months": {}
         },
+        "2020": {
+          "total": 1,
+          "active_months": 0,
+          "average_per_active_month": 0,
+          "months": {}
+        },
         "2021": {
           "total": 4,
           "active_months": 0,
@@ -34,19 +41,19 @@
           "months": {}
         },
         "2022": {
-          "total": 2,
+          "total": 3,
           "active_months": 0,
           "average_per_active_month": 0,
           "months": {}
         },
         "2023": {
-          "total": 6,
+          "total": 8,
           "active_months": 0,
           "average_per_active_month": 0,
           "months": {}
         },
         "2024": {
-          "total": 4,
+          "total": 5,
           "active_months": 0,
           "average_per_active_month": 0,
           "months": {}
@@ -58,12 +65,13 @@
           "months": {}
         },
         "2026": {
-          "total": 19,
-          "active_months": 2,
-          "average_per_active_month": 9.5,
+          "total": 20,
+          "active_months": 3,
+          "average_per_active_month": 6.67,
           "months": {
             "9": 11,
-            "10": 8
+            "10": 8,
+            "11": 1
           }
         }
       },
@@ -95,7 +103,8 @@
         "2026-10-25": 3,
         "2026-10-27": 1,
         "2026-10-28": 1,
-        "2026-11-01": 1
+        "2026-11-01": 1,
+        "2026-11-02": 5
       },
       "ratings": {
         "distribution": {
@@ -103,42 +112,49 @@
           "-4": 0,
           "-3": 0,
           "-2": 1,
-          "-1": 2,
+          "-1": 3,
           "1": 2,
           "2": 1,
-          "3": 14,
-          "4": 16,
+          "3": 16,
+          "4": 18,
           "5": 7
         },
-        "rated_total": 43,
-        "average": 3.28
+        "rated_total": 48,
+        "average": 3.21
       },
       "release_age": {
-        "average": 16.67,
-        "average_release_year": 2007.3,
-        "entries_with_data": 42,
-        "release_year_entries_with_data": 42
+        "average": 15.52,
+        "average_release_year": 2008.4,
+        "entries_with_data": 48,
+        "release_year_entries_with_data": 48
       },
       "breakdown": {
-        "video_games": 18,
-        "games": 2,
-        "reads": 3,
+        "video_games": 20,
+        "games": 3,
+        "reads": 4,
         "multimedia": 16,
-        "music": 4
+        "music": 5
       }
     },
     "video_games": {
       "name": "Video Games",
-      "total": 18,
+      "total": 20,
       "years": {
+        "2020": 1,
         "2021": 3,
         "2022": 2,
-        "2023": 4,
+        "2023": 5,
         "2024": 3,
         "2025": 3,
         "2026": 3
       },
       "year_stats": {
+        "2020": {
+          "total": 1,
+          "active_months": 0,
+          "average_per_active_month": 0,
+          "months": {}
+        },
         "2021": {
           "total": 3,
           "active_months": 0,
@@ -152,7 +168,7 @@
           "months": {}
         },
         "2023": {
-          "total": 4,
+          "total": 5,
           "active_months": 0,
           "average_per_active_month": 0,
           "months": {}
@@ -190,7 +206,8 @@
         "2026-10-13": 1,
         "2026-10-22": 1,
         "2026-10-25": 1,
-        "2026-10-28": 1
+        "2026-10-28": 1,
+        "2026-11-02": 2
       },
       "ratings": {
         "distribution": {
@@ -198,32 +215,39 @@
           "-4": 0,
           "-3": 0,
           "-2": 0,
-          "-1": 1,
+          "-1": 2,
           "1": 1,
           "2": 0,
           "3": 7,
-          "4": 5,
+          "4": 6,
           "5": 4
         },
-        "rated_total": 18,
-        "average": 3.39
+        "rated_total": 20,
+        "average": 3.2
       },
       "release_age": {
-        "average": 5.83,
-        "average_release_year": 2017.7,
-        "entries_with_data": 18,
-        "release_year_entries_with_data": 18
+        "average": 6.35,
+        "average_release_year": 2017.0,
+        "entries_with_data": 20,
+        "release_year_entries_with_data": 20
       }
     },
     "games": {
       "name": "Games",
-      "total": 2,
+      "total": 3,
       "years": {
         "2009": 1,
+        "2023": 1,
         "2025": 1
       },
       "year_stats": {
         "2009": {
+          "total": 1,
+          "active_months": 0,
+          "average_per_active_month": 0,
+          "months": {}
+        },
+        "2023": {
           "total": 1,
           "active_months": 0,
           "average_per_active_month": 0,
@@ -238,7 +262,8 @@
       },
       "heatmap": {
         "2026-09-19": 1,
-        "2026-09-23": 1
+        "2026-09-23": 1,
+        "2026-11-02": 1
       },
       "ratings": {
         "distribution": {
@@ -249,26 +274,27 @@
           "-1": 0,
           "1": 0,
           "2": 0,
-          "3": 1,
+          "3": 2,
           "4": 1,
           "5": 0
         },
-        "rated_total": 2,
-        "average": 3.5
+        "rated_total": 3,
+        "average": 3.33
       },
       "release_age": {
-        "average": 22.5,
-        "average_release_year": 1994.5,
-        "entries_with_data": 2,
-        "release_year_entries_with_data": 2
+        "average": 16.67,
+        "average_release_year": 2002.3,
+        "entries_with_data": 3,
+        "release_year_entries_with_data": 3
       }
     },
     "reads": {
       "name": "Reads",
-      "total": 3,
+      "total": 4,
       "years": {
         "2019": 1,
         "2021": 1,
+        "2022": 1,
         "2026": 1
       },
       "year_stats": {
@@ -279,6 +305,12 @@
           "months": {}
         },
         "2021": {
+          "total": 1,
+          "active_months": 0,
+          "average_per_active_month": 0,
+          "months": {}
+        },
+        "2022": {
           "total": 1,
           "active_months": 0,
           "average_per_active_month": 0,
@@ -295,7 +327,8 @@
       },
       "heatmap": {
         "2026-09-15": 1,
-        "2026-10-18": 2
+        "2026-10-18": 2,
+        "2026-11-02": 1
       },
       "ratings": {
         "distribution": {
@@ -307,17 +340,17 @@
           "1": 0,
           "2": 0,
           "3": 1,
-          "4": 1,
+          "4": 2,
           "5": 1
         },
-        "rated_total": 3,
+        "rated_total": 4,
         "average": 4.0
       },
       "release_age": {
-        "average": 36.33,
-        "average_release_year": 1985.7,
-        "entries_with_data": 3,
-        "release_year_entries_with_data": 3
+        "average": 29.75,
+        "average_release_year": 1992.2,
+        "entries_with_data": 4,
+        "release_year_entries_with_data": 4
       }
     },
     "multimedia": {
@@ -325,7 +358,7 @@
       "total": 16,
       "years": {
         "2025": 1,
-        "2026": 14
+        "2026": 15
       },
       "year_stats": {
         "2025": {
@@ -335,12 +368,13 @@
           "months": {}
         },
         "2026": {
-          "total": 14,
-          "active_months": 2,
-          "average_per_active_month": 7.0,
+          "total": 15,
+          "active_months": 3,
+          "average_per_active_month": 5.0,
           "months": {
             "9": 6,
-            "10": 8
+            "10": 8,
+            "11": 1
           }
         }
       },
@@ -379,18 +413,18 @@
         "average": 2.75
       },
       "release_age": {
-        "average": 14.2,
-        "average_release_year": 2011.7,
-        "entries_with_data": 15,
-        "release_year_entries_with_data": 15
+        "average": 13.69,
+        "average_release_year": 2012.2,
+        "entries_with_data": 16,
+        "release_year_entries_with_data": 16
       }
     },
     "music": {
       "name": "Music",
-      "total": 4,
+      "total": 5,
       "years": {
         "2023": 2,
-        "2024": 1,
+        "2024": 2,
         "2026": 1
       },
       "year_stats": {
@@ -401,7 +435,7 @@
           "months": {}
         },
         "2024": {
-          "total": 1,
+          "total": 2,
           "active_months": 0,
           "average_per_active_month": 0,
           "months": {}
@@ -419,7 +453,8 @@
         "2026-09-22": 1,
         "2026-09-24": 1,
         "2026-10-25": 1,
-        "2026-10-27": 1
+        "2026-10-27": 1,
+        "2026-11-02": 1
       },
       "ratings": {
         "distribution": {
@@ -430,18 +465,18 @@
           "-1": 0,
           "1": 0,
           "2": 0,
-          "3": 0,
+          "3": 1,
           "4": 3,
           "5": 1
         },
-        "rated_total": 4,
-        "average": 4.25
+        "rated_total": 5,
+        "average": 4.0
       },
       "release_age": {
-        "average": 57.0,
-        "average_release_year": 1967.0,
-        "entries_with_data": 4,
-        "release_year_entries_with_data": 4
+        "average": 46.0,
+        "average_release_year": 1978.0,
+        "entries_with_data": 5,
+        "release_year_entries_with_data": 5
       }
     }
   }
