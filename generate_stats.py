@@ -170,6 +170,37 @@ def get_release_year(page, property_name):
 
     return None
 
+def build_year_stats(years, year_months):
+
+    year_stats = {}
+
+    for year in sorted(years):
+
+        months = year_months[year]
+
+        active_months = sum(
+            1 for count in months.values()
+            if count > 0
+        )
+
+        total = years[year]
+
+        year_stats[str(year)] = {
+            "total": total,
+            "active_months": active_months,
+            "average_per_active_month": round(
+                total / active_months,
+                2
+            ) if active_months else 0,
+            "months": {
+                str(month): count
+                for month, count in sorted(months.items())
+            },
+        }
+
+    return year_stats
+
+
 
 def generate_database_stats(config):
 
@@ -177,8 +208,14 @@ def generate_database_stats(config):
 
     total = len(entries)
 
+    # Consumption-year statistics
     years = Counter()
     year_months = defaultdict(Counter)
+
+    # Creation-date statistics
+    created_years = Counter()
+    created_year_months = defaultdict(Counter)
+
     heatmap = Counter()
     ratings = Counter()
 
@@ -198,7 +235,7 @@ def generate_database_stats(config):
         created_date = get_created_date(page)
 
         # ---------------------------------
-        # Consumption year statistics
+        # Consumption year
         # ---------------------------------
 
         if consumption_year is not None:
@@ -214,14 +251,23 @@ def generate_database_stats(config):
                 ][created_date.month] += 1
 
         # ---------------------------------
-        # Heatmap
+        # Creation date statistics
         # ---------------------------------
 
         if created_date:
 
-            date_key = created_date.date().isoformat()
+            created_year = created_date.year
+            created_month = created_date.month
 
-            heatmap[date_key] += 1
+            created_years[created_year] += 1
+
+            created_year_months[
+                created_year
+            ][created_month] += 1
+
+            heatmap[
+                created_date.date().isoformat()
+            ] += 1
 
         # ---------------------------------
         # Ratings
@@ -246,31 +292,14 @@ def generate_database_stats(config):
             config["release_property"],
         )
 
-        # Average release year.
-        #
-        # This only requires a release year.
         if release_year is not None:
+            release_years.append(release_year)
 
-            release_years.append(
-                release_year
-            )
-
-        # Average age at consumption.
-        #
-        # This requires BOTH:
-        # - release year
-        # - consumption year
-        #
-        # Example:
-        # released 1990
-        # consumed 2025
-        # age = 35 years
         if (
             consumption_year is not None
             and release_year is not None
             and release_year <= consumption_year
         ):
-
             release_ages.append(
                 consumption_year - release_year
             )
@@ -279,56 +308,25 @@ def generate_database_stats(config):
     # Year statistics
     # ---------------------------------
 
-    year_stats = {}
+    year_stats = build_year_stats(
+        years,
+        year_months,
+    )
 
-    for year in sorted(years):
-
-        months = year_months[year]
-
-        active_months = sum(
-            1
-            for count in months.values()
-            if count > 0
-        )
-
-        year_total = years[year]
-
-        average_per_active_month = (
-            year_total / active_months
-            if active_months
-            else 0
-        )
-
-        year_stats[str(year)] = {
-
-            "total": year_total,
-
-            "active_months": active_months,
-
-            "average_per_active_month": round(
-                average_per_active_month,
-                2,
-            ),
-
-            "months": {
-                str(month): count
-                for month, count
-                in sorted(months.items())
-            },
-        }
+    created_year_stats = build_year_stats(
+        created_years,
+        created_year_months,
+    )
 
     # ---------------------------------
     # Ratings
     # ---------------------------------
 
-    rated_total = sum(
-        ratings.values()
-    )
+    rated_total = sum(ratings.values())
 
     rating_average = None
 
     if rated_total:
-
         rating_average = round(
             sum(
                 rating * count
@@ -338,16 +336,14 @@ def generate_database_stats(config):
         )
 
     # ---------------------------------
-    # Average age
+    # Average release age
     # ---------------------------------
 
     release_age_average = None
 
     if release_ages:
-
         release_age_average = round(
-            sum(release_ages)
-            / len(release_ages),
+            sum(release_ages) / len(release_ages),
             2,
         )
 
@@ -358,10 +354,8 @@ def generate_database_stats(config):
     average_release_year = None
 
     if release_years:
-
         average_release_year = round(
-            sum(release_years)
-            / len(release_years),
+            sum(release_years) / len(release_years),
             1,
         )
 
@@ -377,16 +371,16 @@ def generate_database_stats(config):
 
         "years": {
             str(year): count
-            for year, count
-            in sorted(years.items())
+            for year, count in sorted(years.items())
         },
 
         "year_stats": year_stats,
 
+        "created_year_stats": created_year_stats,
+
         "heatmap": {
             date: count
-            for date, count
-            in sorted(heatmap.items())
+            for date, count in sorted(heatmap.items())
         },
 
         "ratings": {
@@ -407,27 +401,23 @@ def generate_database_stats(config):
 
             "average_release_year": average_release_year,
 
-            "entries_with_data": len(
-                release_ages
-            ),
+            "entries_with_data": len(release_ages),
 
-            "release_year_entries_with_data": len(
-                release_years
-            ),
+            "release_year_entries_with_data": len(release_years),
         },
     }
 
 
 def combine_all_stats(database_stats):
 
-    """
-    Build the aggregate "All" view by combining the five databases.
-    """
-
     total = 0
 
     years = Counter()
     year_months = defaultdict(Counter)
+
+    created_years = Counter()
+    created_year_months = defaultdict(Counter)
+
     heatmap = Counter()
     ratings = Counter()
 
@@ -444,75 +434,45 @@ def combine_all_stats(database_stats):
         db_total = stats["total"]
 
         total += db_total
-
         breakdown[key] = db_total
 
-        # ---------------------------------
-        # Years
-        # ---------------------------------
-
+        # Consumption years
         for year, count in stats["years"].items():
-
             years[int(year)] += count
 
-        # ---------------------------------
-        # Monthly statistics
-        # ---------------------------------
-
         for year, year_data in stats["year_stats"].items():
-
             for month, count in year_data["months"].items():
-
                 year_months[int(year)][int(month)] += count
 
-        # ---------------------------------
+        # Creation years
+        for year, year_data in stats["created_year_stats"].items():
+
+            created_year = int(year)
+
+            created_years[created_year] += year_data["total"]
+
+            for month, count in year_data["months"].items():
+                created_year_months[created_year][int(month)] += count
+
         # Heatmap
-        # ---------------------------------
-
         for date, count in stats["heatmap"].items():
-
             heatmap[date] += count
 
-        # ---------------------------------
         # Ratings
-        # ---------------------------------
-
         for rating, count in stats["ratings"]["distribution"].items():
-
             ratings[int(rating)] += count
 
-        # ---------------------------------
-        # Average age
-        # ---------------------------------
-
+        # Average release age
         release_age = stats["release_age"]
 
-        entries_with_data = release_age[
-            "entries_with_data"
-        ]
+        entries_with_data = release_age["entries_with_data"]
+        average = release_age["average"]
 
-        average = release_age[
-            "average"
-        ]
+        if average is not None and entries_with_data:
+            release_age_weighted_sum += average * entries_with_data
+            release_age_entries += entries_with_data
 
-        if (
-            average is not None
-            and entries_with_data
-        ):
-
-            release_age_weighted_sum += (
-                average
-                * entries_with_data
-            )
-
-            release_age_entries += (
-                entries_with_data
-            )
-
-        # ---------------------------------
         # Average release year
-        # ---------------------------------
-
         release_year_average = release_age.get(
             "average_release_year"
         )
@@ -526,70 +486,34 @@ def combine_all_stats(database_stats):
             release_year_average is not None
             and release_year_data_entries
         ):
-
             release_year_weighted_sum += (
-                release_year_average
-                * release_year_data_entries
+                release_year_average * release_year_data_entries
             )
-
-            release_year_entries += (
-                release_year_data_entries
-            )
+            release_year_entries += release_year_data_entries
 
     # ---------------------------------
     # Combined year statistics
     # ---------------------------------
 
-    year_stats = {}
+    year_stats = build_year_stats(
+        years,
+        year_months,
+    )
 
-    for year in sorted(years):
-
-        months = year_months[year]
-
-        active_months = sum(
-            1
-            for count in months.values()
-            if count > 0
-        )
-
-        year_total = years[year]
-
-        average_per_active_month = (
-            year_total / active_months
-            if active_months
-            else 0
-        )
-
-        year_stats[str(year)] = {
-
-            "total": year_total,
-
-            "active_months": active_months,
-
-            "average_per_active_month": round(
-                average_per_active_month,
-                2,
-            ),
-
-            "months": {
-                str(month): count
-                for month, count
-                in sorted(months.items())
-            },
-        }
+    created_year_stats = build_year_stats(
+        created_years,
+        created_year_months,
+    )
 
     # ---------------------------------
     # Combined ratings
     # ---------------------------------
 
-    rated_total = sum(
-        ratings.values()
-    )
+    rated_total = sum(ratings.values())
 
     rating_average = None
 
     if rated_total:
-
         rating_average = round(
             sum(
                 rating * count
@@ -599,16 +523,14 @@ def combine_all_stats(database_stats):
         )
 
     # ---------------------------------
-    # Combined average age
+    # Combined average release age
     # ---------------------------------
 
     release_age_average = None
 
     if release_age_entries:
-
         release_age_average = round(
-            release_age_weighted_sum
-            / release_age_entries,
+            release_age_weighted_sum / release_age_entries,
             2,
         )
 
@@ -619,16 +541,10 @@ def combine_all_stats(database_stats):
     average_release_year = None
 
     if release_year_entries:
-
         average_release_year = round(
-            release_year_weighted_sum
-            / release_year_entries,
+            release_year_weighted_sum / release_year_entries,
             1,
         )
-
-    # ---------------------------------
-    # Return
-    # ---------------------------------
 
     return {
 
@@ -638,16 +554,16 @@ def combine_all_stats(database_stats):
 
         "years": {
             str(year): count
-            for year, count
-            in sorted(years.items())
+            for year, count in sorted(years.items())
         },
 
         "year_stats": year_stats,
 
+        "created_year_stats": created_year_stats,
+
         "heatmap": {
             date: count
-            for date, count
-            in sorted(heatmap.items())
+            for date, count in sorted(heatmap.items())
         },
 
         "ratings": {

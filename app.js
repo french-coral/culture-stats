@@ -152,6 +152,15 @@ function getCurrentData() {
   return stats.databases[currentDatabase];
 }
 
+function getCreatedYears(data) {
+
+  return Object.keys(
+    data.created_year_stats || {}
+  )
+    .map(Number)
+    .sort((a, b) => a - b);
+}
+
 
 function getYears(data) {
 
@@ -326,79 +335,122 @@ function renderYearSummary() {
 
   yearSummary.innerHTML = "";
 
-  const years = getYears(data);
+  const years = getCreatedYears(data);
 
   if (!years.length) {
-    yearSummary.textContent = "No data available.";
+    yearSummary.textContent = "No creation data available.";
     return;
   }
 
-  // Use the latest/current year available.
-  const year = years[years.length - 1];
+  const latestYear = years[years.length - 1];
 
-  const statsForYear =
-    data.year_stats?.[year];
+  const wrapper = document.createElement("div");
+  wrapper.className = "year-summary-content";
 
-  if (!statsForYear) {
-    yearSummary.textContent = "No data available.";
-    return;
-  }
+  // Header
+  const header = document.createElement("div");
+  header.className = "year-summary-header";
 
-  const entries =
-    statsForYear.total || 0;
+  const title = document.createElement("div");
 
-  const average =
-    statsForYear.average_per_active_month ?? 0;
+  const heading = document.createElement("h3");
+  heading.textContent = "This year summary";
 
-  const activeMonths =
-    statsForYear.active_months || 0;
+  const subtitle = document.createElement("p");
+  subtitle.textContent = "Pages created in Notion";
 
-  const items = [
-    {
-      value: formatNumber(entries),
-      label: `Entries in ${year}`
-    },
-    {
-      value: Number(average).toFixed(1),
-      label: "Average entries / active month"
-    },
-    {
-      value: activeMonths,
-      label: "Active months"
+  title.appendChild(heading);
+  title.appendChild(subtitle);
+
+  // Year selector
+  const selector = document.createElement("select");
+  selector.className = "year-summary-select";
+
+  years.slice().reverse().forEach(year => {
+
+    const option = document.createElement("option");
+
+    option.value = year;
+    option.textContent = year;
+
+    if (year === latestYear) {
+      option.selected = true;
     }
-  ];
 
-  items.forEach(item => {
-
-    const row =
-      document.createElement("div");
-
-    row.className =
-      "year-summary-row";
-
-    const value =
-      document.createElement("strong");
-
-    value.className =
-      "year-summary-value";
-
-    value.textContent =
-      item.value;
-
-    const label =
-      document.createElement("span");
-
-    label.className =
-      "year-summary-label";
-
-    label.textContent =
-      item.label;
-
-    row.appendChild(value);
-    row.appendChild(label);
-
-    yearSummary.appendChild(row);
+    selector.appendChild(option);
   });
+
+  header.appendChild(title);
+  header.appendChild(selector);
+
+  wrapper.appendChild(header);
+
+  // Metrics
+  const metrics = document.createElement("div");
+  metrics.className = "year-summary-metrics";
+
+  const renderMetrics = year => {
+
+    metrics.innerHTML = "";
+
+    const statsForYear =
+      data.created_year_stats?.[year];
+
+    if (!statsForYear) {
+      metrics.textContent =
+        `No creation data available for ${year}.`;
+      return;
+    }
+
+    const items = [
+
+      {
+        value: formatNumber(statsForYear.total || 0),
+        label: `Entries created in ${year}`,
+      },
+
+      {
+        value: Number(
+          statsForYear.average_per_active_month || 0
+        ).toFixed(1),
+        label: "Average entries / active month",
+      },
+
+      {
+        value: statsForYear.active_months || 0,
+        label: "Active months",
+      },
+
+    ];
+
+    items.forEach(item => {
+
+      const card = document.createElement("div");
+      card.className = "year-summary-metric";
+
+      const value = document.createElement("strong");
+      value.className = "year-summary-value";
+      value.textContent = item.value;
+
+      const label = document.createElement("span");
+      label.className = "year-summary-label";
+      label.textContent = item.label;
+
+      card.appendChild(value);
+      card.appendChild(label);
+
+      metrics.appendChild(card);
+    });
+  };
+
+  renderMetrics(latestYear);
+
+  selector.addEventListener("change", () => {
+    renderMetrics(Number(selector.value));
+  });
+
+  wrapper.appendChild(metrics);
+  yearSummary.appendChild(wrapper);
 }
 
 
@@ -889,7 +941,7 @@ function renderYearChart() {
 
   yearChart.innerHTML = "";
 
-  const years = getYears(data);
+  const years = getCreatedYears(data);
 
   if (!years.length) {
     yearChart.textContent = "No data available.";
@@ -905,7 +957,7 @@ function renderYearChart() {
     );
 
   const yearData =
-    data.year_stats?.[selectedYear];
+    data.created_year_stats?.[selectedYear];
 
   if (!yearData) {
     yearChart.textContent =
