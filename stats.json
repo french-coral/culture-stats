@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-03T11:39:39.636929Z",
+  "updated_at": "2026-11-04T11:53:03.880384Z",
   "databases": {
     "all": {
       "name": "All",
@@ -72,6 +72,18 @@
             "9": 11,
             "10": 8,
             "11": 1
+          }
+        }
+      },
+      "created_year_stats": {
+        "2026": {
+          "total": 48,
+          "active_months": 3,
+          "average_per_active_month": 16.0,
+          "months": {
+            "9": 23,
+            "10": 19,
+            "11": 6
           }
         }
       },
@@ -194,6 +206,18 @@
           }
         }
       },
+      "created_year_stats": {
+        "2026": {
+          "total": 20,
+          "active_months": 3,
+          "average_per_active_month": 6.67,
+          "months": {
+            "9": 12,
+            "10": 6,
+            "11": 2
+          }
+        }
+      },
       "heatmap": {
         "2026-09-15": 1,
         "2026-09-16": 6,
@@ -258,6 +282,17 @@
           "active_months": 0,
           "average_per_active_month": 0,
           "months": {}
+        }
+      },
+      "created_year_stats": {
+        "2026": {
+          "total": 3,
+          "active_months": 2,
+          "average_per_active_month": 1.5,
+          "months": {
+            "9": 2,
+            "11": 1
+          }
         }
       },
       "heatmap": {
@@ -325,6 +360,18 @@
           }
         }
       },
+      "created_year_stats": {
+        "2026": {
+          "total": 4,
+          "active_months": 3,
+          "average_per_active_month": 1.33,
+          "months": {
+            "9": 1,
+            "10": 2,
+            "11": 1
+          }
+        }
+      },
       "heatmap": {
         "2026-09-15": 1,
         "2026-10-18": 2,
@@ -374,6 +421,18 @@
           "months": {
             "9": 6,
             "10": 8,
+            "11": 1
+          }
+        }
+      },
+      "created_year_stats": {
+        "2026": {
+          "total": 16,
+          "active_months": 3,
+          "average_per_active_month": 5.33,
+          "months": {
+            "9": 6,
+            "10": 9,
             "11": 1
           }
         }
@@ -446,6 +505,18 @@
           "average_per_active_month": 1.0,
           "months": {
             "9": 1
+          }
+        }
+      },
+      "created_year_stats": {
+        "2026": {
+          "total": 5,
+          "active_months": 3,
+          "average_per_active_month": 1.67,
+          "months": {
+            "9": 2,
+            "10": 2,
+            "11": 1
           }
         }
       },
