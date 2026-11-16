@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-15T11:46:24.972044Z",
+  "updated_at": "2026-11-16T12:28:24.551982Z",
   "databases": {
     "all": {
       "name": "All",
-      "total": 53,
+      "total": 54,
       "years": {
         "2009": 1,
         "2019": 1,
@@ -13,7 +13,7 @@
         "2023": 8,
         "2024": 5,
         "2025": 8,
-        "2026": 21
+        "2026": 22
       },
       "year_stats": {
         "2009": {
@@ -65,25 +65,25 @@
           "months": {}
         },
         "2026": {
-          "total": 21,
+          "total": 22,
           "active_months": 3,
-          "average_per_active_month": 7.0,
+          "average_per_active_month": 7.33,
           "months": {
             "9": 11,
             "10": 8,
-            "11": 2
+            "11": 3
           }
         }
       },
       "created_year_stats": {
         "2026": {
-          "total": 53,
+          "total": 54,
           "active_months": 3,
-          "average_per_active_month": 17.67,
+          "average_per_active_month": 18.0,
           "months": {
             "9": 23,
             "10": 19,
-            "11": 11
+            "11": 12
           }
         }
       },
@@ -121,7 +121,8 @@
         "2026-11-10": 1,
         "2026-11-12": 1,
         "2026-11-13": 1,
-        "2026-11-14": 1
+        "2026-11-14": 1,
+        "2026-11-15": 1
       },
       "ratings": {
         "distribution": {
@@ -131,25 +132,25 @@
           "-2": 2,
           "-1": 3,
           "1": 2,
-          "2": 2,
+          "2": 3,
           "3": 17,
           "4": 19,
           "5": 7
         },
-        "rated_total": 53,
-        "average": 2.98
+        "rated_total": 54,
+        "average": 2.96
       },
       "release_age": {
-        "average": 14.75,
-        "average_release_year": 2009.2,
-        "entries_with_data": 52,
-        "release_year_entries_with_data": 52
+        "average": 14.63,
+        "average_release_year": 2009.4,
+        "entries_with_data": 54,
+        "release_year_entries_with_data": 54
       },
       "breakdown": {
         "video_games": 21,
         "games": 4,
         "reads": 4,
-        "multimedia": 19,
+        "multimedia": 20,
         "music": 5
       }
     },
@@ -409,11 +410,11 @@
     },
     "multimedia": {
       "name": "Multimedia",
-      "total": 19,
+      "total": 20,
       "years": {
         "2022": 1,
         "2025": 2,
-        "2026": 16
+        "2026": 17
       },
       "year_stats": {
         "2022": {
@@ -429,25 +430,25 @@
           "months": {}
         },
         "2026": {
-          "total": 16,
+          "total": 17,
           "active_months": 3,
-          "average_per_active_month": 5.33,
+          "average_per_active_month": 5.67,
           "months": {
             "9": 6,
             "10": 8,
-            "11": 2
+            "11": 3
           }
         }
       },
       "created_year_stats": {
         "2026": {
-          "total": 19,
+          "total": 20,
           "active_months": 3,
-          "average_per_active_month": 6.33,
+          "average_per_active_month": 6.67,
           "months": {
             "9": 6,
             "10": 9,
-            "11": 4
+            "11": 5
           }
         }
       },
@@ -470,7 +471,8 @@
         "2026-11-01": 1,
         "2026-11-05": 1,
         "2026-11-13": 1,
-        "2026-11-14": 1
+        "2026-11-14": 1,
+        "2026-11-15": 1
       },
       "ratings": {
         "distribution": {
@@ -480,19 +482,19 @@
           "-2": 1,
           "-1": 1,
           "1": 1,
-          "2": 2,
+          "2": 3,
           "3": 5,
           "4": 7,
           "5": 1
         },
-        "rated_total": 19,
-        "average": 2.47
+        "rated_total": 20,
+        "average": 2.45
       },
       "release_age": {
-        "average": 12.44,
-        "average_release_year": 2013.2,
-        "entries_with_data": 18,
-        "release_year_entries_with_data": 18
+        "average": 12.35,
+        "average_release_year": 2013.3,
+        "entries_with_data": 20,
+        "release_year_entries_with_data": 20
       }
     },
     "music": {
