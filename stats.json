@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-18T12:42:26.754393Z",
+  "updated_at": "2026-11-19T12:32:20.054769Z",
   "databases": {
     "all": {
       "name": "All",
-      "total": 54,
+      "total": 55,
       "years": {
         "2009": 1,
         "2019": 1,
@@ -13,7 +13,7 @@
         "2023": 8,
         "2024": 5,
         "2025": 8,
-        "2026": 22
+        "2026": 23
       },
       "year_stats": {
         "2009": {
@@ -65,25 +65,25 @@
           "months": {}
         },
         "2026": {
-          "total": 22,
+          "total": 23,
           "active_months": 3,
-          "average_per_active_month": 7.33,
+          "average_per_active_month": 7.67,
           "months": {
             "9": 11,
             "10": 8,
-            "11": 3
+            "11": 4
           }
         }
       },
       "created_year_stats": {
         "2026": {
-          "total": 54,
+          "total": 55,
           "active_months": 3,
-          "average_per_active_month": 18.0,
+          "average_per_active_month": 18.33,
           "months": {
             "9": 23,
             "10": 19,
-            "11": 12
+            "11": 13
           }
         }
       },
@@ -122,7 +122,8 @@
         "2026-11-12": 1,
         "2026-11-13": 1,
         "2026-11-14": 1,
-        "2026-11-15": 1
+        "2026-11-15": 1,
+        "2026-11-18": 1
       },
       "ratings": {
         "distribution": {
@@ -131,26 +132,26 @@
           "-3": 1,
           "-2": 2,
           "-1": 3,
-          "1": 2,
-          "2": 3,
-          "3": 17,
+          "1": 3,
+          "2": 2,
+          "3": 18,
           "4": 19,
           "5": 7
         },
-        "rated_total": 54,
-        "average": 2.96
+        "rated_total": 55,
+        "average": 2.95
       },
       "release_age": {
-        "average": 14.63,
+        "average": 14.64,
         "average_release_year": 2009.4,
-        "entries_with_data": 54,
-        "release_year_entries_with_data": 54
+        "entries_with_data": 55,
+        "release_year_entries_with_data": 55
       },
       "breakdown": {
         "video_games": 21,
         "games": 4,
         "reads": 4,
-        "multimedia": 20,
+        "multimedia": 21,
         "music": 5
       }
     },
@@ -410,11 +411,11 @@
     },
     "multimedia": {
       "name": "Multimedia",
-      "total": 20,
+      "total": 21,
       "years": {
         "2022": 1,
         "2025": 2,
-        "2026": 17
+        "2026": 18
       },
       "year_stats": {
         "2022": {
@@ -430,25 +431,25 @@
           "months": {}
         },
         "2026": {
-          "total": 17,
+          "total": 18,
           "active_months": 3,
-          "average_per_active_month": 5.67,
+          "average_per_active_month": 6.0,
           "months": {
             "9": 6,
             "10": 8,
-            "11": 3
+            "11": 4
           }
         }
       },
       "created_year_stats": {
         "2026": {
-          "total": 20,
+          "total": 21,
           "active_months": 3,
-          "average_per_active_month": 6.67,
+          "average_per_active_month": 7.0,
           "months": {
             "9": 6,
             "10": 9,
-            "11": 5
+            "11": 6
           }
         }
       },
@@ -472,7 +473,8 @@
         "2026-11-05": 1,
         "2026-11-13": 1,
         "2026-11-14": 1,
-        "2026-11-15": 1
+        "2026-11-15": 1,
+        "2026-11-18": 1
       },
       "ratings": {
         "distribution": {
@@ -481,20 +483,20 @@
           "-3": 1,
           "-2": 1,
           "-1": 1,
-          "1": 1,
-          "2": 3,
-          "3": 5,
+          "1": 2,
+          "2": 2,
+          "3": 6,
           "4": 7,
           "5": 1
         },
-        "rated_total": 20,
-        "average": 2.45
+        "rated_total": 21,
+        "average": 2.43
       },
       "release_age": {
-        "average": 12.35,
-        "average_release_year": 2013.3,
-        "entries_with_data": 20,
-        "release_year_entries_with_data": 20
+        "average": 12.48,
+        "average_release_year": 2013.2,
+        "entries_with_data": 21,
+        "release_year_entries_with_data": 21
       }
     },
     "music": {
