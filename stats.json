@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-24T14:35:43.776907Z",
+  "updated_at": "2026-11-25T13:56:27.572371Z",
   "databases": {
     "all": {
       "name": "All",
-      "total": 58,
+      "total": 59,
       "years": {
         "2009": 1,
         "2019": 1,
@@ -13,7 +13,7 @@
         "2023": 8,
         "2024": 5,
         "2025": 8,
-        "2026": 26
+        "2026": 27
       },
       "year_stats": {
         "2009": {
@@ -65,25 +65,25 @@
           "months": {}
         },
         "2026": {
-          "total": 26,
+          "total": 27,
           "active_months": 3,
-          "average_per_active_month": 8.67,
+          "average_per_active_month": 9.0,
           "months": {
             "9": 11,
             "10": 8,
-            "11": 7
+            "11": 8
           }
         }
       },
       "created_year_stats": {
         "2026": {
-          "total": 58,
+          "total": 59,
           "active_months": 3,
-          "average_per_active_month": 19.33,
+          "average_per_active_month": 19.67,
           "months": {
             "9": 23,
             "10": 19,
-            "11": 16
+            "11": 17
           }
         }
       },
@@ -125,7 +125,8 @@
         "2026-11-15": 1,
         "2026-11-18": 1,
         "2026-11-22": 2,
-        "2026-11-23": 1
+        "2026-11-23": 1,
+        "2026-11-24": 1
       },
       "ratings": {
         "distribution": {
@@ -137,20 +138,20 @@
           "1": 3,
           "2": 4,
           "3": 18,
-          "4": 20,
+          "4": 21,
           "5": 7
         },
-        "rated_total": 58,
-        "average": 2.93
+        "rated_total": 59,
+        "average": 2.95
       },
       "release_age": {
-        "average": 14.1,
-        "average_release_year": 2010.0,
-        "entries_with_data": 58,
-        "release_year_entries_with_data": 58
+        "average": 13.93,
+        "average_release_year": 2010.2,
+        "entries_with_data": 59,
+        "release_year_entries_with_data": 59
       },
       "breakdown": {
-        "video_games": 22,
+        "video_games": 23,
         "games": 5,
         "reads": 4,
         "multimedia": 22,
@@ -159,7 +160,7 @@
     },
     "video_games": {
       "name": "Video Games",
-      "total": 22,
+      "total": 23,
       "years": {
         "2020": 1,
         "2021": 3,
@@ -167,7 +168,7 @@
         "2023": 5,
         "2024": 3,
         "2025": 4,
-        "2026": 4
+        "2026": 5
       },
       "year_stats": {
         "2020": {
@@ -207,24 +208,24 @@
           "months": {}
         },
         "2026": {
-          "total": 4,
+          "total": 5,
           "active_months": 2,
-          "average_per_active_month": 2.0,
+          "average_per_active_month": 2.5,
           "months": {
             "9": 3,
-            "11": 1
+            "11": 2
           }
         }
       },
       "created_year_stats": {
         "2026": {
-          "total": 22,
+          "total": 23,
           "active_months": 3,
-          "average_per_active_month": 7.33,
+          "average_per_active_month": 7.67,
           "months": {
             "9": 12,
             "10": 6,
-            "11": 4
+            "11": 5
           }
         }
       },
@@ -243,7 +244,8 @@
         "2026-10-28": 1,
         "2026-11-02": 2,
         "2026-11-10": 1,
-        "2026-11-22": 1
+        "2026-11-22": 1,
+        "2026-11-24": 1
       },
       "ratings": {
         "distribution": {
@@ -255,17 +257,17 @@
           "1": 1,
           "2": 1,
           "3": 7,
-          "4": 6,
+          "4": 7,
           "5": 4
         },
-        "rated_total": 22,
-        "average": 2.91
+        "rated_total": 23,
+        "average": 2.96
       },
       "release_age": {
-        "average": 5.82,
-        "average_release_year": 2017.7,
-        "entries_with_data": 22,
-        "release_year_entries_with_data": 22
+        "average": 5.74,
+        "average_release_year": 2017.9,
+        "entries_with_data": 23,
+        "release_year_entries_with_data": 23
       }
     },
     "games": {
